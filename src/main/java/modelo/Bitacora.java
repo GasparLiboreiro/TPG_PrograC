@@ -1,0 +1,25 @@
+package modelo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Bitacora {
+    private final List<String> entradas;
+
+    public Bitacora() {
+        this.entradas = new ArrayList<>();
+    }
+    public void registrar(String entrada) {
+        if (entrada != null && !entrada.trim().isEmpty()) {
+            this.entradas.add(entrada);
+        }
+    }
+    // Por contrato de negocio, quien consume esta lista solo la lee
+    public List<String> getEntradas() {
+        return entradas;
+    }
+    @Override
+    public String toString() {
+        return "Bitacora{" + "entradas=" + entradas + '}';
+    }
+}
