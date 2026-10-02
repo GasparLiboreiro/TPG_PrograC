@@ -15,6 +15,11 @@ public class Bitacora {
             this.entradas.add(entrada);
         }
     }
+
+    // agrega tdo el contenido de in encima de this
+    public void append(Bitacora in){
+        entradas.addAll(in.getEntradas()); // testeado, funciona god
+    }
     // Por contrato de negocio, quien consume esta lista solo la lee
     // para asegurar ese comportamiento podriamos retornar un iterator de entradas
     public List<String> getEntradas() {

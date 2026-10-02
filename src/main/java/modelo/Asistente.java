@@ -4,7 +4,7 @@ import modelo.excepciones.TransicionEstadoInvalida;
 
 public class Asistente {
     private Nave nave;
-    private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, las misiones deben tener un informe de lo que ocurrio en la misison, osea que usarian una subseccion de esta bitacora
+    private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
 
     public Asistente(Nave nave){
         this.nave = nave;
