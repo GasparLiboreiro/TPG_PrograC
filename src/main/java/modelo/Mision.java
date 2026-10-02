@@ -1,5 +1,4 @@
 /* cambios que creo a futuro a la espera de asistente(hecha asi para test):
-* -habria q modificar la referencia de nave por el asistente, y en el contructor
 * -integrar los estados del motor a preparar y ejecutar
 *
 * */

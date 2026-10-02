@@ -8,6 +8,17 @@ public class Asistente {
 
     public Asistente(Nave nave){
         this.nave = nave;
+        this.bitacora_general = new Bitacora();
+    }
+
+    public InformeMision ejecutarMision(Mision mision) {
+        InformeMision informe = mision.ejecutarCiclo();
+        this.bitacora_general.append(informe.getBitacora());
+        return informe;
+    }
+
+    public Bitacora getBitacoraGeneral() {
+        return this.bitacora_general;
     }
 
     public void preparar_salto() {
