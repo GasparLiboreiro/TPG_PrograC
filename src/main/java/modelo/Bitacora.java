@@ -9,12 +9,14 @@ public class Bitacora {
     public Bitacora() {
         this.entradas = new ArrayList<>();
     }
+
     public void registrar(String entrada) {
         if (entrada != null && !entrada.trim().isEmpty()) {
             this.entradas.add(entrada);
         }
     }
     // Por contrato de negocio, quien consume esta lista solo la lee
+    // para asegurar ese comportamiento podriamos retornar un iterator de entradas
     public List<String> getEntradas() {
         return entradas;
     }

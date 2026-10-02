@@ -1,5 +1,7 @@
 package modelo;
 
+import modelo.excepciones.TransicionEstadoInvalida;
+
 public class Nave {
     // tripulacion
     MotorWarp motor_warp;
@@ -13,6 +15,20 @@ public class Nave {
         this.energia = energia;
         this.desgaste = desgaste;
         this.motor_warp = new MotorWarp();
+    }
+
+    // delega las funciones del motor al motor
+    public void preparar_salto() throws TransicionEstadoInvalida {
+        motor_warp.preparar_salto();
+    }
+    public void arrancar() throws TransicionEstadoInvalida {
+        motor_warp.arrancar();
+    }
+    public void detener() throws TransicionEstadoInvalida {
+        motor_warp.detener();
+    }
+    public void enfriar_motor() throws TransicionEstadoInvalida {
+        motor_warp.enfriar_motor();
     }
 
     public int getCombustible() {
