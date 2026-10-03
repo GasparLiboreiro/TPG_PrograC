@@ -22,4 +22,9 @@ public class MisionRetorno extends Mision {
     protected String ejecutarMision() { //cuando se desarrollen las misiones
         return "Cartel M3: Nave retornada a la base de operaciones segura.";
     }
+
+    @Override
+    public Mision crearMision(Nave nave){
+        return new MisionRetorno(nave);
+    }
 }

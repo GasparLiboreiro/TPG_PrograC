@@ -22,4 +22,9 @@ public class MisionRecoleccion extends Mision {
     protected String ejecutarMision() { //cuando se desarrollen las misiones
         return "Cartel M2: Muestra recolectada e inventariada de forma segura.";
     }
+
+    @Override
+    public Mision crearMision(Nave nave){
+        return new MisionRecoleccion(nave);
+    }
 }

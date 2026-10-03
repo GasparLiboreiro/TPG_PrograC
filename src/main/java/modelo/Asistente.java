@@ -2,18 +2,35 @@ package modelo;
 
 import modelo.excepciones.TransicionEstadoInvalida;
 
+import java.util.ArrayList;
+
 public class Asistente {
     private Nave nave;
-    private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
+    private Bitacora bitacora_general;// la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
+    private Mision misionActual;
+    private ArrayList<Mision> listaMisiones = new ArrayList<>();
+
 
     public Asistente(Nave nave){
         this.nave = nave;
         this.bitacora_general = new Bitacora();
+        listaMisiones.add(new MisionIntercepcion(nave));
+        listaMisiones.add(new MisionRecoleccion(nave));
+        listaMisiones.add(new MisionRetorno(nave));
     }
 
-    public InformeMision ejecutarMision(Mision mision) {
-        InformeMision informe = mision.ejecutarCiclo();
+    public InformeMision ejecutarMision() {
+        if (misionActual == null){
+            System.out.println("Actualmente no se esta llevando a cabo ninguna mision"); //Quizas no hay que hacer ningun cartel no estoy seguro.
+            // hay que ver que devolver aca
+            // IMPORTANTE.
+        }
+        InformeMision informe = misionActual.ejecutarCiclo();
         this.bitacora_general.append(informe.getBitacora());
+
+        //
+        misionActual=null;//Al ejecutarse la mision se deja en null para decir que no hay ninguna mision actualmente.
+        //
         return informe;
     }
 
@@ -104,4 +121,8 @@ public class Asistente {
         bitacora_general.registrar("Se aumento el desgaste en "+cantidad+" unidades, desgaste actual: "+cantidad);
     }
 
+
+    public void setMision(int idMision){
+        misionActual = listaMisiones.get(idMision).crearMision(nave);
+    }
 }

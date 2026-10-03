@@ -71,4 +71,5 @@ public abstract class Mision {
     public abstract int getCostoEnergia();
     public abstract int getCostoDesgaste();
     protected abstract String ejecutarMision();
+    public abstract Mision crearMision(Nave nave);
 }
