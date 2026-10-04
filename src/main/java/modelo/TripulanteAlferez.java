@@ -8,7 +8,7 @@ public class TripulanteAlferez extends TripulanteDecorator {
 
     @Override
     public double calcularHaberes() {
-        return 200 + calcularAdicionalAntiguedad();
+        return 200 + calcularAdicionalAntiguedad() ;
     }
 
     private double calcularAdicionalAntiguedad() {

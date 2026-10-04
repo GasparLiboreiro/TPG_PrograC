@@ -1,6 +1,6 @@
 package modelo;
 
-public class Tripulante implements TripulanteInterfaz {
+public class Tripulante implements TripulanteInterfaz{
     private String Nombre;
     private String identidad;
     private String cargo;
@@ -11,7 +11,7 @@ public class Tripulante implements TripulanteInterfaz {
         this.Nombre = Nombre;
         this.identidad = identidad;
         this.cargo = cargo;
-        this.planetaDeOrigen = planetaDeOrigen;
+
         this.antiguedad = antiguedad;
     }
 
