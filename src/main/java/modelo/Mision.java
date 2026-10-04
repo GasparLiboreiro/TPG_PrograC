@@ -23,11 +23,24 @@ public abstract class Mision {
     }
 
     public final InformeMision ejecutarCiclo() throws EstadoInvalido{ //throws EstadoInvalido para que el que lo llame se entere si no se podia ejecutar aun
+        InformeMision informe;
+
         preparar();
+        prepararHook();
         ejecutar();
+        ejecutarHook();
         evaluar();
-        return cerrar();
+        evaluarHook();
+        informe = cerrar();
+        informe = cerrarHook(informe); // cerrarHook recibe el informe default por si le quiciese hacer alguna modificacion
+        return informe;
     }
+
+
+
+x
+
+
     protected void preparar() throws EstadoInvalido{
         bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos.");
         if (nave.getCombustible() < getCostoCombustible() || nave.getEnergia() < getCostoEnergia()) {
@@ -36,6 +49,9 @@ public abstract class Mision {
         }
         bitacora.registrar("Preparación exitosa: recursos suficientes.");
     }
+    private void prepararHook() {
+    }
+
     protected void ejecutar() {
         nave.consumirCombustible(getCostoCombustible());
         nave.consumirEnergia(getCostoEnergia());
@@ -46,14 +62,22 @@ public abstract class Mision {
         this.cartelResultado = ejecutarMision();
         bitacora.registrar("Acción realizada: " + this.cartelResultado);
     }
+    private void ejecutarHook() {
+    }
+
     protected void evaluar() {
         this.exitosa = (this.cartelResultado != null && !this.cartelResultado.isEmpty());
         bitacora.registrar("Evaluación de la misión: " + (exitosa ? "ÉXITO" : "FALLO"));
+    }
+    private void evaluarHook() {
     }
 
     protected InformeMision cerrar() {
         bitacora.registrar("Misión finalizada. Emitiendo informe.");
         return new InformeMision(this, nave);
+    }
+    private InformeMision cerrarHook(InformeMision informe_basico) {
+        return informe_basico;
     }
 
     // Getters para InformeMision
