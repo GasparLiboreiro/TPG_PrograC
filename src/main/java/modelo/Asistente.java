@@ -1,14 +1,22 @@
 package modelo;
 
+import modelo.excepciones.EstadoInvalido;
+import modelo.excepciones.FactoryTipoInvalido;
 import modelo.excepciones.TransicionEstadoInvalida;
+
+import java.util.ArrayList;
 
 public class Asistente {
     private Nave nave;
     private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
+    private Mision mision_actual;
+    private ArrayList<InformeMision> informes;
 
-    public Asistente(Nave nave){
-        this.nave = nave;
+    public Asistente(String tipo_nave) throws FactoryTipoInvalido {
+        this.nave = NaveFactory.crearNave(tipo_nave);
         this.bitacora_general = new Bitacora();
+        this.mision_actual = null;
+        this.informes = new ArrayList<InformeMision>();
     }
 
     public InformeMision ejecutarMision(Mision mision) {
@@ -62,6 +70,31 @@ public class Asistente {
         }
     }
 
+    // tipo=null => mision_actual=null
+    public void setMision(String tipo){
+        if(tipo==null)
+            this.mision_actual = null;
+        else
+            mision_actual = MisionFactory.crearMision(tipo, this.nave);
+    }
+    public void ejecutarMision() {
+        if (mision_actual == null){
+            bitacora_general.registrar("No hay ninguna mision para ejecutar"); //Quizas no hay que hacer ningun cartel no estoy seguro.
+        }
+        else
+        {
+            try {
+                InformeMision informe = mision_actual.ejecutarCiclo();
+                this.bitacora_general.append(informe.getBitacora());
+                this.informes.add(informe);
+                mision_actual=null;//Al ejecutarse la mision se deja en null para decir que no hay ninguna mision actualmente.
+            }
+            catch(EstadoInvalido e)
+            {
+                bitacora_general.registrar("No se pudo ejecutar la mision: "+e.getMessage());
+            }
+        }
+    }
     // todas las sig funciones eran getters de la nave, pero creo que no van a hacer falta para nada asi que simplemente son formas de pedir que el asistente registre los datos
     public void registrar_combustible() {
         bitacora_general.registrar("Combustible: "+nave.getCombustible());

@@ -9,14 +9,14 @@ public class InformeMision {
     private final int desgasteFinal;
     private final Bitacora bitacora;
 
-    public InformeMision(Mision mision, Nave nave, Bitacora bitacora) {
+    public InformeMision(Mision mision, Nave nave) {
         this.codigoMision = mision.getCodigo();
         this.estadoFinal = mision.isExitosa() ? "ÉXITO" : "FALLO";
         this.cartelResultado = mision.getCartelResultado();
         this.combustibleRestante = nave.getCombustible();
         this.energiaRestante = nave.getEnergia();
         this.desgasteFinal = nave.getDesgaste();
-        this.bitacora = bitacora;
+        this.bitacora = mision.getBitacora();
     }
 
     public String getCodigoMision() { return

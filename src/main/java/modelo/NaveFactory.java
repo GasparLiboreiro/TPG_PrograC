@@ -3,7 +3,7 @@ package modelo;
 import modelo.excepciones.FactoryTipoInvalido;
 
 public class NaveFactory {
-    public static Nave makeNave(String tipo) throws FactoryTipoInvalido
+    public static Nave crearNave(String tipo) throws FactoryTipoInvalido
     {
         switch(tipo){
             case "Exploradora":

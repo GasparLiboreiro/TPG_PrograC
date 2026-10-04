@@ -5,6 +5,8 @@
 
 package modelo;
 
+import modelo.excepciones.EstadoInvalido;
+
 public abstract class Mision {
     protected final Nave nave;
     protected final Bitacora bitacora;
@@ -20,17 +22,17 @@ public abstract class Mision {
         this.exitosa = false;
     }
 
-    public final InformeMision ejecutarCiclo() {
+    public final InformeMision ejecutarCiclo() throws EstadoInvalido{ //throws EstadoInvalido para que el que lo llame se entere si no se podia ejecutar aun
         preparar();
         ejecutar();
         evaluar();
         return cerrar();
     }
-    protected void preparar() {
+    protected void preparar() throws EstadoInvalido{
         bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos.");
         if (nave.getCombustible() < getCostoCombustible() || nave.getEnergia() < getCostoEnergia()) {
             bitacora.registrar("Fallo en preparación: recursos insuficientes.");
-            throw new IllegalStateException("Recursos insuficientes para iniciar la misión " + getCodigo() + ".");
+            throw new EstadoInvalido("Recursos insuficientes para iniciar la misión " + getCodigo() + ".");
         }
         bitacora.registrar("Preparación exitosa: recursos suficientes.");
     }
@@ -51,7 +53,7 @@ public abstract class Mision {
 
     protected InformeMision cerrar() {
         bitacora.registrar("Misión finalizada. Emitiendo informe.");
-        return new InformeMision(this, nave, bitacora);
+        return new InformeMision(this, nave);
     }
 
     // Getters para InformeMision
