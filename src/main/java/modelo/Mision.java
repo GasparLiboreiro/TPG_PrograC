@@ -38,7 +38,7 @@ public abstract class Mision {
 
 
 
-x
+
 
 
     protected void preparar() throws EstadoInvalido{
