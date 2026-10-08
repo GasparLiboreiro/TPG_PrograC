@@ -1,7 +1,6 @@
 package modelo;
 
 import modelo.excepciones.EstadoInvalido;
-import modelo.excepciones.FactoryTipoInvalido;
 import modelo.excepciones.TransicionEstadoInvalida;
 
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ public class Asistente {
     private Mision mision_actual;
     private ArrayList<InformeMision> informes;
 
-    public Asistente(String tipo_nave) throws FactoryTipoInvalido {
+    public Asistente(String tipo_nave) {
         this.nave = NaveFactory.crearNave(tipo_nave);
         this.bitacora_general = new Bitacora();
         this.mision_actual = null;

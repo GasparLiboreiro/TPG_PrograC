@@ -1,21 +1,14 @@
-import modelo.Bitacora;
-import modelo.Nave;
-import modelo.NaveFactory;
-import modelo.excepciones.FactoryTipoInvalido;
+import modelo.*;
 
 public class Prueba {
     public static void main(String[] args)
     {
-        Bitacora a = new Bitacora();
-        Bitacora b = new Bitacora();
-        a.registrar("1 bleh");
-        b.registrar("3 bluh");
-        a.registrar("2 blah");
-        b.registrar("4 bloh");
-        System.out.println(a);
-        System.out.println(b);
-        a.append(b);
-        System.out.println(a);
+
+        Tripulante tripulante = new TripulanteCapitan("Jose", "EBX-231", 10);
+
+        tripulante = new TripulanteOrigenMarciano((TripulanteConcreto) tripulante);
+        // calculo a mano: 1000 + 1000*0.2*10 + 18 = 3018
+        System.out.println(tripulante.calcularHaberes());
 
     }
 }

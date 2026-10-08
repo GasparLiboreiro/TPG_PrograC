@@ -1,35 +1,33 @@
 package modelo;
 
-public class TripulanteConsejero extends TripulanteDecorator {
-    private int consejosRegistrados;
+public class TripulanteConsejero extends TripulanteConcreto {
 
-    public TripulanteConsejero(TripulanteInterfaz tripulante, int consejosRegistrados) {
-        super(tripulante);
-        this.consejosRegistrados = consejosRegistrados;
+    private int consejos_dados; // el consejero tiene la mecanica de que gana un plus de plata por cada consejo dado entre liquidaciones de haberes
+
+    public TripulanteConsejero(String Nombre, String identidad, int antiguedad) {
+        super(Nombre, identidad, antiguedad);
     }
 
-    public TripulanteConsejero(TripulanteInterfaz tripulante){
-        this(tripulante, 0);
+    @Override
+    public String getCargo() {
+        return "Consejero";
+    }
+
+    @Override
+    public String getPlanetaDeOrigen() {
+        return "";// no se sabe aca
+    }
+
+    public void registrarConsejo()
+    {
+        this.consejos_dados++;
     }
 
     @Override
     public double calcularHaberes() {
-        return 600 + calcularAdicionalAntiguedad() + calcularAdicionalConsejos();
-    }
-
-    private double calcularAdicionalAntiguedad() {
-        return 600 * 0.05 * getAntiguedad();
-    }
-
-    private double calcularAdicionalConsejos() {
-        return consejosRegistrados * 2;
-    }
-
-    public int getConsejosRegistrados() {
-        return consejosRegistrados;
-    }
-
-    public void addConsejosRegistrados(int consejos) {
-        this.consejosRegistrados += consejos;
+        double base_oficio = 600;
+        double haberes_totales = base_oficio + base_oficio*0.05*this.getAntiguedad() + consejos_dados*2;
+        consejos_dados = 0;
+        return haberes_totales;
     }
 }

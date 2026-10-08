@@ -1,17 +1,23 @@
 package modelo;
 
-public class TripulanteCapitan extends TripulanteDecorator {
+public class TripulanteCapitan extends TripulanteConcreto {
+    public TripulanteCapitan(String Nombre, String identidad, int antiguedad) {
+        super(Nombre, identidad, antiguedad);
+    }
 
-    public TripulanteCapitan(TripulanteInterfaz tripulante) {
-        super(tripulante);
+    @Override
+    public String getCargo() {
+        return "Capitan";
+    }
+
+    @Override
+    public String getPlanetaDeOrigen() {
+        return ""; // aca no se sabe
     }
 
     @Override
     public double calcularHaberes() {
-        return 1000 + calcularAdicionalAntiguedad();
-    }
-
-    private double calcularAdicionalAntiguedad() {
-        return 1000 * 0.20 * getAntiguedad();
+        double base_oficio = 1000;
+        return base_oficio + base_oficio*0.20*this.getAntiguedad();
     }
 }
