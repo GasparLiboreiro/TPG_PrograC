@@ -1,4 +1,6 @@
-package modelo;
+package modelo.misiones;
+
+import modelo.nave.Nave;
 
 public class MisionRetorno extends Mision {
     public MisionRetorno(Nave nave) {

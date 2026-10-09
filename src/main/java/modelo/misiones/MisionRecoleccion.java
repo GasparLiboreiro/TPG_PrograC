@@ -1,14 +1,14 @@
-package modelo;
+package modelo.misiones;
 
-public class MisionIntercepcion extends Mision {
-    public MisionIntercepcion(Nave nave) {
+import modelo.nave.Nave;
+
+public class MisionRecoleccion extends Mision {
+    public MisionRecoleccion(Nave nave) {
         super(nave);
     }
 
     @Override public String getCodigo() {
-
-        return "M-01";
-
+        return "M-02";
     }
     @Override public int getCostoCombustible() {
         return 4;
@@ -22,6 +22,6 @@ public class MisionIntercepcion extends Mision {
 
     @Override
     protected String ejecutarMision() { //cuando se desarrollen las misiones
-        return "Cartel M1: Intercepción y asistencia en ruta completada con éxito.";
+        return "Cartel M2: Muestra recolectada e inventariada de forma segura.";
     }
 }
