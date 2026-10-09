@@ -147,6 +147,7 @@ public class Asistente {
     public void mostrarHaberesTripulantes(){
         Iterator<Tripulante> i_tripulantes = nave.getTripulantes();
         Tripulante t;
+        bitacora_general.registrar("Mostrando Haberes de la tripulacion:");
         while(i_tripulantes.hasNext()){
             t = i_tripulantes.next();
             bitacora_general.registrar(t.getNombre()+" -> $"+t.calcularHaberes());
