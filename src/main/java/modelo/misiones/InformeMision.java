@@ -1,4 +1,7 @@
-package modelo;
+package modelo.misiones;
+
+import modelo.Bitacora;
+import modelo.nave.Nave;
 
 public class InformeMision {
     private final String codigoMision;

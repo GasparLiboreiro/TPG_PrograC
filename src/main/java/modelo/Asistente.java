@@ -1,7 +1,11 @@
 package modelo;
-
 import modelo.excepciones.EstadoInvalido;
 import modelo.excepciones.TransicionEstadoInvalida;
+import modelo.misiones.InformeMision;
+import modelo.misiones.Mision;
+import modelo.misiones.MisionFactory;
+import modelo.nave.Nave;
+import modelo.nave.NaveFactory;
 
 import java.util.ArrayList;
 
@@ -11,8 +15,8 @@ public class Asistente {
     private Mision mision_actual;
     private ArrayList<InformeMision> informes;
 
-    public Asistente(String tipo_nave) {
-        this.nave = NaveFactory.crearNave(tipo_nave);
+    public Asistente(Nave nave) {
+        this.nave = nave;
         this.bitacora_general = new Bitacora();
         this.mision_actual = null;
         this.informes = new ArrayList<InformeMision>();

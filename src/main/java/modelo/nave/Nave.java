@@ -1,5 +1,6 @@
-package modelo;
+package modelo.nave;
 
+import modelo.MotorWarp;
 import modelo.excepciones.TransicionEstadoInvalida;
 
 public class Nave {

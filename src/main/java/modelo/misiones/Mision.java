@@ -3,9 +3,10 @@
 *
 * */
 
-package modelo;
-
+package modelo.misiones;
+import modelo.Bitacora;
 import modelo.excepciones.EstadoInvalido;
+import modelo.nave.Nave;
 
 public abstract class Mision {
     protected final Nave nave;
@@ -22,7 +23,7 @@ public abstract class Mision {
         this.exitosa = false;
     }
 
-    public final InformeMision ejecutarCiclo() throws EstadoInvalido{ //throws EstadoInvalido para que el que lo llame se entere si no se podia ejecutar aun
+    public final InformeMision ejecutarCiclo() throws EstadoInvalido { //throws EstadoInvalido para que el que lo llame se entere si no se podia ejecutar aun
         InformeMision informe;
 
         preparar();
@@ -41,7 +42,7 @@ public abstract class Mision {
 
 
 
-    protected void preparar() throws EstadoInvalido{
+    protected void preparar() throws EstadoInvalido {
         bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos.");
         if (nave.getCombustible() < getCostoCombustible() || nave.getEnergia() < getCostoEnergia()) {
             bitacora.registrar("Fallo en preparación: recursos insuficientes.");

@@ -3,7 +3,9 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Bitacora {
+import modelo.excepciones.TipoMisionInvalida;
+
+public class Bitacora { 
     private final List<String> entradas;
 
     public Bitacora() {
@@ -16,8 +18,17 @@ public class Bitacora {
         }
     }
 
-    // agrega tdo el contenido de in encima de this
-    public void append(Bitacora in){
+    /**
+     * Agrega todo el contenido de in encima de this
+     * <b>Pre:</b> in es distinto de null
+     *
+     * @param tipo Bitacora cuyos datos se desean depositar en entradas
+     * @throws IllegalArgumentException si in es null
+     */
+    public void append(Bitacora in) throws NullPointerException {
+    	if (in==null) {
+    		throw new NullPointerException("La bitacora no puede ser nula");
+    	}
         entradas.addAll(in.getEntradas()); // testeado, funciona god
     }
     // Por contrato de negocio, quien consume esta lista solo la lee
