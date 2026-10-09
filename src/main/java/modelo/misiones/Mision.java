@@ -40,8 +40,6 @@ public abstract class Mision {
 
 
 
-
-
     protected void preparar() throws EstadoInvalido {
         bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos.");
         if (nave.getCombustible() < getCostoCombustible() || nave.getEnergia() < getCostoEnergia()) {

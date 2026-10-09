@@ -1,12 +1,12 @@
-package modelo;
+package modelo.tripulantes;
 
 public abstract class Tripulante{
-    private String Nombre;
+    private String nombre;
     private String identidad;
     private int antiguedad;
 
-    public Tripulante(String Nombre, String identidad, int antiguedad) {
-        this.Nombre = Nombre;
+    public Tripulante(String nombre, String identidad, int antiguedad) {
+        this.nombre = nombre;
         this.identidad = identidad;
         this.antiguedad = antiguedad;
     }
@@ -19,7 +19,7 @@ public abstract class Tripulante{
     }
 
     public String getNombre(){
-        return Nombre;
+        return nombre;
     }
 
     public void setAntiguedad(int antiguedad) {
@@ -31,4 +31,8 @@ public abstract class Tripulante{
     public abstract String getPlanetaDeOrigen(); // las instancias hijas de "TripulanteConcreto" definen este return como null porque no conoce el origen, el decorator hijo de "TripulanteOrigen" 'pisa' esta funcion
 
     public abstract double calcularHaberes();
+
+    public String toString(){
+        return "Nombre:'"+nombre+"'  No. de identidad:'"+identidad+"'  Anios de antiguedad:"+antiguedad;
+    }
 }

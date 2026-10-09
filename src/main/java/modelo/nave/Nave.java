@@ -1,7 +1,11 @@
 package modelo.nave;
 
 import modelo.MotorWarp;
+import modelo.tripulantes.Tripulante;
 import modelo.excepciones.TransicionEstadoInvalida;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Nave {
     // tripulacion
@@ -10,12 +14,14 @@ public class Nave {
     private int combustible;
     private int energia;
     private int desgaste;
+    private ArrayList<Tripulante> tripulantes = new ArrayList<Tripulante>();
 
     public Nave(int combustible, int energia, int desgaste) {
         this.combustible = combustible;
         this.energia = energia;
         this.desgaste = desgaste;
         this.motor_warp = new MotorWarp();
+        this.tripulantes = new ArrayList<>();
     }
 
     // delega las funciones del motor al motor
@@ -56,6 +62,14 @@ public class Nave {
             throw new IllegalStateException("Energía insuficiente.");
         }
         this.energia -= cantidad;
+    }
+
+    public void addTripulante(Tripulante t) {
+        tripulantes.add(t);
+    }
+
+    public Iterator<Tripulante> getTripulantes() {
+        return tripulantes.iterator();
     }
 
     public void aumentarDesgaste(int cantidad) {

@@ -1,4 +1,4 @@
-package modelo;
+package modelo.tripulantes;
 
 public class TripulanteAlferez extends TripulanteConcreto {
 
@@ -20,5 +20,9 @@ public class TripulanteAlferez extends TripulanteConcreto {
     public double calcularHaberes() {
         double base_oficio = 200;
         return base_oficio + base_oficio*0.005*this.getAntiguedad();
+    }
+
+    public String toString(){
+        return super.toString()+"  Oficio:'Alferez'";
     }
 }

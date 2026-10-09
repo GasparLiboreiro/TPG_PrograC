@@ -1,4 +1,4 @@
-package modelo;
+package modelo.tripulantes;
 
 public class TripulanteOrigenTerricola extends TripulanteOrigenDecorator {
     public TripulanteOrigenTerricola(TripulanteConcreto tripulante_base) {
@@ -13,5 +13,10 @@ public class TripulanteOrigenTerricola extends TripulanteOrigenDecorator {
     @Override
     public double calcularHaberes() {
         return this.tripulante_base.calcularHaberes() + 20; // plus de origen
+    }
+
+    @Override
+    public String toString(){
+        return this.tripulante_base.toString() + "  Planeta de origen:'Terricola'";
     }
 }

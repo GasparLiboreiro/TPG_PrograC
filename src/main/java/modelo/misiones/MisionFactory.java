@@ -1,5 +1,4 @@
 package modelo.misiones;
-import modelo.excepciones.TipoMisionInvalida;
 import modelo.nave.Nave;
 
 public class MisionFactory {
@@ -8,18 +7,18 @@ public class MisionFactory {
 
     /**
      * Crea una nueva mision del tipo proveido por parametro
-     * <b>Pre:</b> tipo es igual a alguna de las opciones en MisionFactory.tipos_misiones
-     * <b>Pre:</b> nave no es null
+     * <b>Pre:</b>
+     * -    tipo es igual a alguna de las opciones en MisionFactory.tipos_misiones
+     * -    nave no es null
      *
      * @param tipo String con el nombre del tipo de mision, case sensitive
      * @param nave Instancia de la nave que va a ejecutar la mision
-     * @throws TipoMisionInvalida si tipo no esta en tipos_misiones
-     * @throws IllegalArgumentException si nave es null
+     * @throws IllegalArgumentException si nave es null o el tipo es invalido
      * @return Instancia de una nave del tipo especificado
      */
-    public static Mision crearMision(String tipo, Nave nave) throws TipoMisionInvalida {
+    public static Mision crearMision(String tipo, Nave nave) { // quite la
         if (nave==null) {
-        	throw new IllegalArgumentException("La nave no puede ser nula");
+        	throw new IllegalArgumentException("MisionFactory.crearMision() recibio una nave nula");
         }
         switch(tipo.toUpperCase()){
             case "INTERCEPCION":
@@ -29,7 +28,7 @@ public class MisionFactory {
             case "RETORNO":
                 return new MisionRetorno(nave);
             default:
-            	throw new TipoMisionInvalida(tipo);
+            	throw new IllegalArgumentException("MisionFactory.crearMision() recibio un tipo de mision invalido: '"+tipo+"'");
         }
     }
 }

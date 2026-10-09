@@ -1,4 +1,4 @@
-package modelo;
+package modelo.tripulantes;
 
 public class TripulanteConsejero extends TripulanteConcreto {
 
@@ -29,5 +29,8 @@ public class TripulanteConsejero extends TripulanteConcreto {
         double haberes_totales = base_oficio + base_oficio*0.05*this.getAntiguedad() + consejos_dados*2;
         consejos_dados = 0;
         return haberes_totales;
+    }
+    public String toString(){
+        return super.toString()+"  Oficio:'Consejero'";
     }
 }

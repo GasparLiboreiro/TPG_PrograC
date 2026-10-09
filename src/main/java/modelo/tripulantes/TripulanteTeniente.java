@@ -1,4 +1,4 @@
-package modelo;
+package modelo.tripulantes;
 
 public class TripulanteTeniente extends TripulanteConcreto {
     public TripulanteTeniente(String Nombre, String identidad, int antiguedad) {
@@ -19,5 +19,8 @@ public class TripulanteTeniente extends TripulanteConcreto {
     public double calcularHaberes() {
         double base_oficio = 400;
         return base_oficio + base_oficio*0.03*this.getAntiguedad();
+    }
+    public String toString(){
+        return super.toString()+"  Oficio:'Teniente'";
     }
 }
