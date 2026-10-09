@@ -1,4 +1,4 @@
-package modelo;
+package modelo.tripulantes;
 
 // esta clase solo sirve para englobar a todos los decorators de origen
 public abstract class TripulanteOrigenDecorator extends Tripulante{
@@ -42,4 +42,6 @@ public abstract class TripulanteOrigenDecorator extends Tripulante{
     public abstract String getPlanetaDeOrigen();
     @Override
     public abstract double calcularHaberes();
+    @Override
+    public abstract String toString();
 }

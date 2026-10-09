@@ -6,8 +6,10 @@ import modelo.misiones.Mision;
 import modelo.misiones.MisionFactory;
 import modelo.nave.Nave;
 import modelo.nave.NaveFactory;
+import modelo.tripulantes.Tripulante;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Asistente {
     private Nave nave;
@@ -42,7 +44,7 @@ public class Asistente {
             bitacora_general.registrar("Motor Warp no pudo preparar el salto: "+e.getMessage());
         }
     }
-    public void arrancar() throws TransicionEstadoInvalida {
+    public void arrancar() {
         try{
             nave.arrancar();
             bitacora_general.registrar("Motor Warp en salto");
@@ -52,7 +54,7 @@ public class Asistente {
             bitacora_general.registrar("Motor Warp no pudo arrancar el salto: "+e.getMessage());
         }
     }
-    public void detener() throws TransicionEstadoInvalida {
+    public void detener() {
         try{
             nave.detener();
             bitacora_general.registrar("Motor Warp detubo el salto");
@@ -62,7 +64,7 @@ public class Asistente {
             bitacora_general.registrar("Motor Warp no pudo detener salto: "+e.getMessage());
         }
     }
-    public void enfriar_motor() throws TransicionEstadoInvalida {
+    public void enfriar_motor() {
         try{
             nave.enfriar_motor();
             bitacora_general.registrar("Motor Warp se enfrio");
@@ -73,12 +75,8 @@ public class Asistente {
         }
     }
 
-    // tipo=null => mision_actual=null
-    public void setMision(String tipo){
-        if(tipo==null)
-            this.mision_actual = null;
-        else
-            mision_actual = MisionFactory.crearMision(tipo, this.nave);
+    public void setMision(Mision m){
+        mision_actual = m;
     }
     public void ejecutarMision() {
         if (mision_actual == null){
@@ -135,9 +133,23 @@ public class Asistente {
         }
     }
 
+    public void addTripulante(Tripulante t) {
+        bitacora_general.registrar("Nuevo tripulante en la nave: "+t);
+        nave.addTripulante(t);
+    }
+
+
     public void aumentarDesgaste(int cantidad) {
         nave.aumentarDesgaste(cantidad);
         bitacora_general.registrar("Se aumento el desgaste en "+cantidad+" unidades, desgaste actual: "+cantidad);
     }
 
+    public void mostrarHaberesTripulantes(){
+        Iterator<Tripulante> i_tripulantes = nave.getTripulantes();
+        Tripulante t;
+        while(i_tripulantes.hasNext()){
+            t = i_tripulantes.next();
+            bitacora_general.registrar(t.getNombre()+" -> $"+t.calcularHaberes());
+        }
+    }
 }

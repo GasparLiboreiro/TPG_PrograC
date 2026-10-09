@@ -1,17 +1,40 @@
+import modelo.Asistente;
+import modelo.misiones.Mision;
 import modelo.misiones.MisionFactory;
 import modelo.nave.Nave;
 import modelo.nave.NaveFactory;
+import modelo.tripulantes.TripulanteFactory;
+
+import java.util.Iterator;
 
 public class Prueba {
     public static void main(String[] args)
     {
     	Nave n = NaveFactory.crearNave("carguero");
-    	MisionFactory.crearMision("Recoleccion", n);
-       /* Tripulante tripulante = new TripulanteCapitan("Jose", "EBX-231", 10);
+        Asistente asistente = new Asistente(n);
+        Mision m = MisionFactory.crearMision("Recoleccion", n);
 
-        tripulante = new TripulanteOrigenMarciano((TripulanteConcreto) tripulante);
-        // calculo a mano: 1000 + 1000*0.2*10 + 18 = 3018
-        System.out.println(tripulante.calcularHaberes());*/
+        asistente.addTripulante(TripulanteFactory.crearTripulante("CAPITAN", "TERRICOLA", "Juan Hernandez", "GFA-322", 10));
+        asistente.addTripulante(TripulanteFactory.crearTripulante("ALFEREZ", "VULCANO", "Enzo Fanti", "FFF-115", 2));
+
+        asistente.preparar_salto();
+        asistente.arrancar();
+
+        asistente.setMision(m);
+        asistente.ejecutarMision();
+
+        asistente.detener();
+        asistente.enfriar_motor();
+
+        asistente.mostrarHaberesTripulantes();
+
+        Iterator<String> i_entradas = asistente.getBitacoraGeneral().getEntradas().iterator();
+        String entrada;
+        while(i_entradas.hasNext()){
+            entrada = i_entradas.next();
+            System.out.println("- "+entrada);
+        }
+
 
     }
 }

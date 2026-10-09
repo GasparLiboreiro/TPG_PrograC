@@ -3,7 +3,6 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-import modelo.excepciones.TipoMisionInvalida;
 
 public class Bitacora { 
     private final List<String> entradas;
