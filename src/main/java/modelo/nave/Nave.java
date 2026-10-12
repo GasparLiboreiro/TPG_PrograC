@@ -49,14 +49,28 @@ public class Nave {
     public int getDesgaste() {
         return this.desgaste;
     }
-
+    /**
+     * Cambia el estado del combustible de la nave simulando el consumo de este
+     * <b>Pre:</b>
+     * -    cantidad es menor o igual a la cantidad de combustible de la nave
+     *
+     * @param int cantidad que indica la cantidad de combustible que se va a consumir de la nave
+     * @throws IllegalArgumentException si el combustible a consumir es mayor al combustible que tiene la nave
+     */
     public void consumirCombustible(int cantidad) {
         if (this.combustible < cantidad) {
             throw new IllegalStateException("Combustible insuficiente.");
         }
         this.combustible -= cantidad;
     }
-
+    /**
+     * Cambia el estado de la energia de la nave simulando el consumo de esta
+     * <b>Pre:</b>
+     * -    cantidad es menor o igual a la cantida de energia de la nave
+     *
+     * @param int cantidad que indica la cantidad de energia que se va a consumir de la nave
+     * @throws IllegalArgumentException si la energia a consumir es mayor a la energia que tiene la nave
+     */
     public void consumirEnergia(int cantidad) {
         if (this.energia < cantidad) {
             throw new IllegalStateException("Energía insuficiente.");
