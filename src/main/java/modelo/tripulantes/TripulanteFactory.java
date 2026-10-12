@@ -4,6 +4,25 @@ public class TripulanteFactory {
     public static final String[] tipos_oficio = {"CAPITAN", "CONSEJERO", "TENIENTE", "ALFEREZ"};
     public static final String[] tipos_origen = {"TERRICOLA", "MARCIANO", "VULCANO"};
 
+    /**
+     * Crea un nuevo tripulante con el tipo que se especifique en la invocacion del metodo
+     * <b>Pre:</b>
+     * -    tipo_oficio es igual a null
+     * -    tipo_origen es igual a null
+     * -    nombre es igual a null
+     * -    identidad es igual a null
+     * -    antiguedad es igual a null
+     * -    tipo_oficio es valido
+     * -    tipo_origen es valido
+     *
+     * @param tipo_oficio String que indica el oficio del tripulante a crear
+     * @param tipo_origen String que indica el oficio del tripulante a crear
+     * @param nombre String que indica el nombre del tripulante a crear
+     * @param identidad String que indica la identidad del tripulante a crear
+     * @param int que indica los años de antiguedad del tripulante
+     * @throws IllegalArgumentException si los parametros son null o si tipo_oficio y/o tipo_origen no son validos
+     * @return Instancia de tripulante creado
+     */
     public static Tripulante crearTripulante(String tipo_oficio, String tipo_origen, String nombre, String identidad, int antiguedad)
     {
         if(tipo_oficio == null)
