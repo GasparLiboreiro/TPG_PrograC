@@ -1,18 +1,20 @@
-package modelo;
+package modelo.misiones;
 
-public class MisionRetorno extends Mision {
-    public MisionRetorno(Nave nave) {
+import modelo.nave.Nave;
+
+public class MisionRecoleccion extends Mision {
+    public MisionRecoleccion(Nave nave) {
         super(nave);
     }
 
     @Override public String getCodigo() {
-        return "M-03";
+        return "M-02";
     }
     @Override public int getCostoCombustible() {
         return 4;
     }
     @Override public int getCostoEnergia() {
-        return 0;
+        return 5;
     }
     @Override public int getCostoDesgaste() {
         return 4;
@@ -20,11 +22,11 @@ public class MisionRetorno extends Mision {
 
     @Override
     protected String ejecutarMision() { //cuando se desarrollen las misiones
-        return "Cartel M3: Nave retornada a la base de operaciones segura.";
+        return "Cartel M2: Muestra recolectada e inventariada de forma segura.";
     }
 
     @Override
     public Mision crearMision(Nave nave){
-        return new MisionRetorno(nave);
+        return new MisionRecoleccion(nave);
     }
 }
