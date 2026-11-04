@@ -1,6 +1,6 @@
 package modelo.tripulantes;
 
-public class TripulanteAlferez extends TripulanteConcreto {
+public class TripulanteAlferez extends Tripulante {
 
     public TripulanteAlferez(String Nombre, String identidad, int antiguedad) {
         super(Nombre, identidad, antiguedad);

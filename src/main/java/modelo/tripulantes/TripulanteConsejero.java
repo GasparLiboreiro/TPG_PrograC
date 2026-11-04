@@ -1,6 +1,6 @@
 package modelo.tripulantes;
 
-public class TripulanteConsejero extends TripulanteConcreto {
+public class TripulanteConsejero extends Tripulante {
 
     private int consejos_dados; // el consejero tiene la mecanica de que gana un plus de plata por cada consejo dado entre liquidaciones de haberes
 

@@ -57,13 +57,13 @@ public class TripulanteFactory {
 
         switch(tipo_origen){
             case "TERRICOLA":
-                tripulante = new TripulanteOrigenTerricola((TripulanteConcreto) tripulante);
+                tripulante = new TripulanteOrigenTerricola(tripulante);
                 break;
             case "MARCIANO":
-                tripulante = new TripulanteOrigenMarciano((TripulanteConcreto) tripulante);
+                tripulante = new TripulanteOrigenMarciano(tripulante);
                 break;
             case "VULCANO":
-                tripulante = new TripulanteOrigenVulcano((TripulanteConcreto) tripulante);
+                tripulante = new TripulanteOrigenVulcano(tripulante);
                 break;
             default:
                 throw new IllegalArgumentException("TripulanteFactory.crearTripulante() recibio un tipo_origen invalido: '"+tipo_origen+"'");

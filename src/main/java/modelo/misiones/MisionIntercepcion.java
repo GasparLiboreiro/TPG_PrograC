@@ -26,9 +26,8 @@ public class MisionIntercepcion extends Mision {
     protected String ejecutarMision() { //cuando se desarrollen las misiones
         return "Cartel M1: Intercepción y asistencia en ruta completada con éxito.";
     }
-
     @Override
-    public Mision crearMision(Nave nave){
-        return new MisionIntercepcion(nave);
+    protected void ejecutarHook() {
+        bitacora.registrar(" Análisis táctico de radar y escaneo perimetral completado.");
     }
 }

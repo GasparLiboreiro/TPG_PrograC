@@ -26,7 +26,7 @@ public class MisionRecoleccion extends Mision {
     }
 
     @Override
-    public Mision crearMision(Nave nave){
-        return new MisionRecoleccion(nave);
+    protected void ejecutarHook() {
+        bitacora.registrar("Muestras almacenadas en bodega estanca presurizada.");
     }
 }
