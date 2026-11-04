@@ -5,10 +5,13 @@ public abstract class TripulanteOrigenDecorator extends Tripulante{
     // array util para el factory de Tripulantes y para la interfaz grafica
     public static String[] tipos_origen = {"Terricola", "Vulcano", "Marciano"};
 
-    protected TripulanteConcreto tripulante_base;
+    protected Tripulante tripulante_base;
 
-    public TripulanteOrigenDecorator(TripulanteConcreto tripulante_base) {
+    public TripulanteOrigenDecorator(Tripulante tripulante_base) {
         super("", "", 0); // las propiedades de esta clase no importan
+        if (tripulante_base == null) {
+            throw new IllegalArgumentException("El tripulante a decorar no puede ser nulo.");
+        }
         this.tripulante_base = tripulante_base;
     }
 

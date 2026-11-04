@@ -26,7 +26,7 @@ public class MisionRetorno extends Mision {
     }
 
     @Override
-    public Mision crearMision(Nave nave){
-        return new MisionRetorno(nave);
+    protected void prepararHook() {
+        bitacora.registrar("Comprobación de coordenadas y vector de reentrada a la base.");
     }
 }

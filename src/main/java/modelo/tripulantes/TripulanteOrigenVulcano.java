@@ -1,7 +1,7 @@
 package modelo.tripulantes;
 
 public class TripulanteOrigenVulcano extends TripulanteOrigenDecorator {
-    public TripulanteOrigenVulcano(TripulanteConcreto tripulante_base) {
+    public TripulanteOrigenVulcano(Tripulante tripulante_base) {
         super(tripulante_base);
     }
 

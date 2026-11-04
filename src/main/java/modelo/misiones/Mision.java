@@ -41,14 +41,18 @@ public abstract class Mision {
 
 
     protected void preparar() throws EstadoInvalido {
-        bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos.");
+        bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos y tripulacion.");
         if (nave.getCombustible() < getCostoCombustible() || nave.getEnergia() < getCostoEnergia()) {
             bitacora.registrar("Fallo en preparación: recursos insuficientes.");
             throw new EstadoInvalido("Recursos insuficientes para iniciar la misión " + getCodigo() + ".");
         }
+        if (!nave.tieneTripulacionValida()) {
+            bitacora.registrar("Fallo en preparación: dotación incompleta. Se requiere 1 capitán y al menos 4 tripulantes adicionales.");
+            throw new EstadoInvalido("La nave no cuenta con la dotación mínima reglamentaria para iniciar la misión.");
+}
         bitacora.registrar("Preparación exitosa: recursos suficientes.");
     }
-    private void prepararHook() {
+    protected void prepararHook() {
     }
 
     protected void ejecutar() {
@@ -61,21 +65,21 @@ public abstract class Mision {
         this.cartelResultado = ejecutarMision();
         bitacora.registrar("Acción realizada: " + this.cartelResultado);
     }
-    private void ejecutarHook() {
+    protected void ejecutarHook() {
     }
 
     protected void evaluar() {
         this.exitosa = (this.cartelResultado != null && !this.cartelResultado.isEmpty());
         bitacora.registrar("Evaluación de la misión: " + (exitosa ? "ÉXITO" : "FALLO"));
     }
-    private void evaluarHook() {
+    protected void evaluarHook() {
     }
 
     protected InformeMision cerrar() {
         bitacora.registrar("Misión finalizada. Emitiendo informe.");
         return new InformeMision(this, nave);
     }
-    private InformeMision cerrarHook(InformeMision informe_basico) {
+    protected InformeMision cerrarHook(InformeMision informe_basico) {
         return informe_basico;
     }
 
@@ -96,5 +100,4 @@ public abstract class Mision {
     public abstract int getCostoEnergia();
     public abstract int getCostoDesgaste();
     protected abstract String ejecutarMision();
-    public abstract Mision crearMision(Nave nave);
 }

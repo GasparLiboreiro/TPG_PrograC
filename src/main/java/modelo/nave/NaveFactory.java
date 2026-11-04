@@ -17,11 +17,11 @@ public class NaveFactory {
             throw new IllegalArgumentException("NaveFactory.crearNave() recibio un tipo igual a null");
 		switch (tipo.toUpperCase()) {
 	        case "EXPLORADORA":
-	            return new NaveCombate();
+	            return new NaveExploradora();
 	        case "CARGUERO":
 	            return new NaveCarguera();
 	        case "COMBATE":
-	            return new NaveExploradora();
+                return new NaveCombate();
 	        default:
 				throw new IllegalArgumentException("NaveFactory.crearNave() recibio un tipo que no estaba invalido: '"+tipo+"'");
 		}

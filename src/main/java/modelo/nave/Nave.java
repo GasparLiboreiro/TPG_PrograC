@@ -140,7 +140,33 @@ public abstract class Nave implements ElementoDelUniverso {
 
     public void addTripulante(Tripulante tripulante) {
         verificarEstado();
-        tripulantes.add(Objects.requireNonNull(tripulante));
+        if (tripulante == null) {
+            throw new IllegalArgumentException("El tripulante a agregar no puede ser nulo.");
+        }
+
+        // 1. Validar identidad repetida
+        for (Tripulante existente : tripulantes) {
+            if (existente.getIdentidad() != null && existente.getIdentidad().equalsIgnoreCase(tripulante.getIdentidad())) {
+                throw new IllegalArgumentException("Ya existe un tripulante registrado con la identidad: " + tripulante.getIdentidad());
+            }
+        }
+        if ("capitan".equalsIgnoreCase(tripulante.getCargo()) && tieneCapitan()) {
+            throw new IllegalStateException("La nave ya cuenta con un Capitán asignado.");
+        }
+        tripulantes.add(tripulante);
+    }
+
+    public boolean tieneCapitan() {
+        for (Tripulante t : tripulantes) {
+            if ("capitan".equalsIgnoreCase(t.getCargo())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean tieneTripulacionValida() {
+        return tripulantes.size() >= 5 && tieneCapitan();
     }
 
     public Iterator<Tripulante> getTripulantes() {
