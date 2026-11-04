@@ -1,16 +1,15 @@
 import modelo.Asistente;
-import modelo.misiones.Mision;
-import modelo.misiones.MisionFactory;
+import modelo.misiones.*;
 import modelo.nave.Nave;
 import modelo.nave.NaveFactory;
-import modelo.tripulantes.TripulanteFactory;
+import modelo.tripulantes.*;
 
 import java.util.Iterator;
 
 public class Prueba {
     public static void main(String[] args)
     {
-    	Nave n = NaveFactory.crearNave("carguero");
+        Nave n = NaveFactory.crearNave("carguero");
         Asistente asistente = new Asistente(n);
         Mision m = MisionFactory.crearMision("Recoleccion", n);
 

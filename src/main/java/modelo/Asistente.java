@@ -1,6 +1,10 @@
 package modelo;
 
 import modelo.excepciones.TransicionEstadoInvalida;
+import modelo.nave.*;
+import modelo.misiones.*;
+import modelo.tripulantes.*;
+import modelo.misiones.*;
 
 public class Asistente {
     private Nave nave;

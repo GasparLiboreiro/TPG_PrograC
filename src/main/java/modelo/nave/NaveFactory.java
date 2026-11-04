@@ -13,19 +13,17 @@ public class NaveFactory {
      * @return Instancia de una nave del tipo especificado
      */
     public static Nave crearNave(String tipo) {
-    	
-    	if (tipo == null)
+		if (tipo == null)
             throw new IllegalArgumentException("NaveFactory.crearNave() recibio un tipo igual a null");
-    	
-    	switch (tipo.toUpperCase()) {
+		switch (tipo.toUpperCase()) {
 	        case "EXPLORADORA":
-	            return new Nave(60, 80, 0);
+	            return new NaveCombate();
 	        case "CARGUERO":
-	            return new Nave(100, 60, 0);
+	            return new NaveCarguera();
 	        case "COMBATE":
-	            return new Nave(80, 100, 0);
+	            return new NaveExploradora();
 	        default:
 				throw new IllegalArgumentException("NaveFactory.crearNave() recibio un tipo que no estaba invalido: '"+tipo+"'");
-    	}
+		}
     }
 }
