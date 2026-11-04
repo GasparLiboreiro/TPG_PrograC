@@ -1,27 +1,18 @@
 package modelo;
-import modelo.excepciones.EstadoInvalido;
-import modelo.excepciones.TransicionEstadoInvalida;
-import modelo.misiones.InformeMision;
-import modelo.misiones.Mision;
-import modelo.misiones.MisionFactory;
-import modelo.nave.Nave;
-import modelo.nave.NaveFactory;
-import modelo.tripulantes.Tripulante;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import modelo.excepciones.TransicionEstadoInvalida;
+import modelo.nave.*;
+import modelo.misiones.*;
+import modelo.tripulantes.*;
+import modelo.misiones.*;
 
 public class Asistente {
     private Nave nave;
     private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
-    private Mision mision_actual;
-    private ArrayList<InformeMision> informes;
 
-    public Asistente(Nave nave) {
+    public Asistente(Nave nave){
         this.nave = nave;
         this.bitacora_general = new Bitacora();
-        this.mision_actual = null;
-        this.informes = new ArrayList<InformeMision>();
     }
 
     public InformeMision ejecutarMision(Mision mision) {
@@ -44,7 +35,7 @@ public class Asistente {
             bitacora_general.registrar("Motor Warp no pudo preparar el salto: "+e.getMessage());
         }
     }
-    public void arrancar() {
+    public void arrancar() throws TransicionEstadoInvalida {
         try{
             nave.arrancar();
             bitacora_general.registrar("Motor Warp en salto");
@@ -54,7 +45,7 @@ public class Asistente {
             bitacora_general.registrar("Motor Warp no pudo arrancar el salto: "+e.getMessage());
         }
     }
-    public void detener() {
+    public void detener() throws TransicionEstadoInvalida {
         try{
             nave.detener();
             bitacora_general.registrar("Motor Warp detubo el salto");
@@ -64,7 +55,7 @@ public class Asistente {
             bitacora_general.registrar("Motor Warp no pudo detener salto: "+e.getMessage());
         }
     }
-    public void enfriar_motor() {
+    public void enfriar_motor() throws TransicionEstadoInvalida {
         try{
             nave.enfriar_motor();
             bitacora_general.registrar("Motor Warp se enfrio");
@@ -75,27 +66,6 @@ public class Asistente {
         }
     }
 
-    public void setMision(Mision m){
-        mision_actual = m;
-    }
-    public void ejecutarMision() {
-        if (mision_actual == null){
-            bitacora_general.registrar("No hay ninguna mision para ejecutar"); //Quizas no hay que hacer ningun cartel no estoy seguro.
-        }
-        else
-        {
-            try {
-                InformeMision informe = mision_actual.ejecutarCiclo();
-                this.bitacora_general.append(informe.getBitacora());
-                this.informes.add(informe);
-                mision_actual=null;//Al ejecutarse la mision se deja en null para decir que no hay ninguna mision actualmente.
-            }
-            catch(EstadoInvalido e)
-            {
-                bitacora_general.registrar("No se pudo ejecutar la mision: "+e.getMessage());
-            }
-        }
-    }
     // todas las sig funciones eran getters de la nave, pero creo que no van a hacer falta para nada asi que simplemente son formas de pedir que el asistente registre los datos
     public void registrar_combustible() {
         bitacora_general.registrar("Combustible: "+nave.getCombustible());
@@ -133,24 +103,9 @@ public class Asistente {
         }
     }
 
-    public void addTripulante(Tripulante t) {
-        bitacora_general.registrar("Nuevo tripulante en la nave: "+t);
-        nave.addTripulante(t);
-    }
-
-
     public void aumentarDesgaste(int cantidad) {
         nave.aumentarDesgaste(cantidad);
         bitacora_general.registrar("Se aumento el desgaste en "+cantidad+" unidades, desgaste actual: "+cantidad);
     }
 
-    public void mostrarHaberesTripulantes(){
-        Iterator<Tripulante> i_tripulantes = nave.getTripulantes();
-        Tripulante t;
-        bitacora_general.registrar("Mostrando Haberes de la tripulacion:");
-        while(i_tripulantes.hasNext()){
-            t = i_tripulantes.next();
-            bitacora_general.registrar(t.getNombre()+" -> $"+t.calcularHaberes());
-        }
-    }
 }
