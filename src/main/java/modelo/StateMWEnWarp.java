@@ -28,4 +28,9 @@ public class StateMWEnWarp implements StateMotorWarp{
     public void enfriar_motor() throws TransicionEstadoInvalida {
         throw new TransicionEstadoInvalida("MotorWarp no puede enfriarse estando en warp");
     }
+
+    @Override
+    public int getEstado() {
+        return MotorWarp.ESTADO_EN_WARP;
+    }
 }

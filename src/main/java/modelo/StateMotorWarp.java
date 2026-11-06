@@ -7,4 +7,5 @@ public interface StateMotorWarp { // los estados disponibles son: Disponible, Pr
     public void arrancar() throws TransicionEstadoInvalida;
     public void detener() throws TransicionEstadoInvalida;
     public void enfriar_motor() throws TransicionEstadoInvalida;
+    public int getEstado();
 }

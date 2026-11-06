@@ -6,32 +6,123 @@ import modelo.misiones.*;
 import modelo.tripulantes.*;
 import modelo.misiones.*;
 
+import java.util.Iterator;
+
 public class Asistente {
     private Nave nave;
     private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
 
-    public Asistente(Nave nave){
-        this.nave = nave;
+    public Asistente(){
+        this.nave = null;
         this.bitacora_general = new Bitacora();
     }
 
+    // los incisos 1) 2) 3) etc son las categorias de funcionalidades exigidas en el Enunciado Trabajo Práctico - Parte 2.pdf
+
+    //
+    // 1) Acceso al Sistema (persistencia)
+    //
+    //public void login_cuenta(String nombre, String contrasenia) throws AccountException
+    //public void register_cuenta(String nombre, String contrasenia) throws AccountException
+
+
+    //
+    // 2) Seccion de creacion
+    //
+    /**
+     * Se crea una nueva nave del tipo proveido y se usa como la nave del sistema
+     * <b>Pre:</b> el tipo debe pertenecer a las opciones en NaveFactory.tipos_naves
+     * @param tipo tipo de nave a ser creada
+     */
+    public void create_nave(String tipo) {
+        this.nave = NaveFactory.crearNave(tipo);
+    }
+    /**
+     * Añade un tripulante a la nave</br>
+     * <b>Pre:</b></br>
+     * - El tripulante debe ser un tripulante valido (no nulo)</br>
+     * - La nave debe haber sido inicializada previamente usando create_nave(tipo)</br>
+     * @throws Exception si ya hay un tripulante registrado con el mismo identificador o si se intenta añadir un capitan ya habiendo un capitan en la tripulacion
+     * @param tripulante Tripulante a añadir a la nave
+     */
+    public void add_tripulante(Tripulante tripulante) throws Exception {
+        assert this.nave!=null : "Se intento añadir un tripulante sin haber creado la nave previamente";
+        this.nave.addTripulante(tripulante);
+    }
+
+
+    //
+    // 3) Seccion de Tripulantes
+    //
+    /**
+     * Retorna un iterator con los tripulantes de la nave
+     * <b>Pre:</b></br>
+     * - La nave debe haber sido inicializada previamente usando create_nave(tipo)</br>
+     * @return iterador de tripulantes
+     */
+    public Iterator<Tripulante> get_tripulantes() {
+        assert this.nave!=null : "Se intento peidr los tripulantes sin haber creado la nave previamente";
+        return this.nave.getTripulantes();
+    }
+
+
+    //
+    // 4) Seccion de Control de la Nave
+    //
+    /**
+     * <b>Pre:</b> La nave debe haber sido inicializada previamente usando create_nave(tipo)</br>
+     */
+    public int getCombustible(){
+        assert this.nave!=null : "Se intento pedir el combustible sin haber creado la nave previamente";
+        return this.nave.getCombustible();
+    }
+    /**
+     * <b>Pre:</b> La nave debe haber sido inicializada previamente usando create_nave(tipo)</br>
+     */
+    public int getEnergia(){
+        assert this.nave!=null : "Se intento pedir la energia sin haber creado la nave previamente";
+        return this.nave.getEnergia();
+    }
+    /**
+     * <b>Pre:</b> La nave debe haber sido inicializada previamente usando create_nave(tipo)</br>
+     */
+    public int getDesgaste(){
+        assert this.nave!=null : "Se intento pedir el desgaste sin haber creado la nave previamente";
+        return this.nave.getDesgaste();
+    }
+    /**
+     * <b>Pre:</b> La nave debe haber sido inicializada previamente usando create_nave(tipo)</br>
+     * @return devuelve un estado de los especificados en las constantes de la clase MotorWarp
+     */
+    public int getEstadoMotorWarp(){
+        assert this.nave!=null : "Se intento pedir el estado del motor warp sin haber creado la nave previamente";
+        return this.nave.getEstadoMotorWarp();
+    }
+    public Bitacora getBitacoraGeneral() {
+        return this.bitacora_general;
+    }
+    //<<get informes finales misiones?>> hay que mostrar los "informes de misiones", habría que reestructurar varias cosas
     public InformeMision ejecutarMision(Mision mision) {
         InformeMision informe = mision.ejecutarCiclo();
         this.bitacora_general.append(informe.getBitacora());
         return informe;
     }
 
-    public Bitacora getBitacoraGeneral() {
-        return this.bitacora_general;
-    }
+    //
+    // 5) Sección del Visor Recóndito
+    //
+    //public void visorAgregarNaveConsumidora()
+    //public void visorAgregarGeneradoraDeEnergia()
+    //public ArrayList<String>? visorGetEventos()
+
+
 
     public void preparar_salto() {
-        try{
+        try {
             nave.preparar_salto();
             bitacora_general.registrar("Motor Warp preparado para el salto");
         }
-        catch(TransicionEstadoInvalida e)
-        {
+        catch(TransicionEstadoInvalida e) {
             bitacora_general.registrar("Motor Warp no pudo preparar el salto: "+e.getMessage());
         }
     }
