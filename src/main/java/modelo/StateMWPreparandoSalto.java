@@ -28,4 +28,9 @@ public class StateMWPreparandoSalto implements StateMotorWarp{
     public void enfriar_motor() throws TransicionEstadoInvalida {
         throw new TransicionEstadoInvalida("MotorWarp no puede enfriarse estando preparando salto");
     }
+
+    @Override
+    public int getEstado() {
+        return MotorWarp.ESTADO_PREPARANDO_SALTO;
+    }
 }
