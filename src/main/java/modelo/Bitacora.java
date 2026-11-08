@@ -25,9 +25,9 @@ public class Bitacora {
      * @throws IllegalArgumentException si in es null
      */
     public void append(Bitacora in) throws NullPointerException {
-    	if (in==null) {
-    		throw new NullPointerException("La bitacora no puede ser nula");
-    	}
+        if (in==null) {
+            throw new NullPointerException("La bitacora no puede ser nula");
+        }
         entradas.addAll(in.getEntradas()); // testeado, funciona god
     }
     // Por contrato de negocio, quien consume esta lista solo la lee

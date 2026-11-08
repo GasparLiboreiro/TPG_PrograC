@@ -48,32 +48,6 @@ public abstract class Nave implements ElementoDelUniverso {
         return destruida;
     }
 
-    public void preparar_salto() throws TransicionEstadoInvalida {
-
-        try {
-            verificarEstado();
-            motor_warp.preparar_salto();
-        }
-        catch (Exception e) {
-            //queda ver bien que tirar acá. yo pensaba cambiar la excepcion de verificar estado por otra pero no se bien cual poner.
-        }
-    }
-
-    public void arrancar() throws TransicionEstadoInvalida {
-        verificarEstado();
-        motor_warp.arrancar();
-    }
-
-    public void detener() throws TransicionEstadoInvalida {
-        verificarEstado();
-        motor_warp.detener();
-    }
-
-    public void enfriar_motor() throws TransicionEstadoInvalida {
-        verificarEstado();
-        motor_warp.enfriar_motor();
-    }
-
     public int getCombustible() {
         return combustible;
     }
@@ -175,6 +149,29 @@ public abstract class Nave implements ElementoDelUniverso {
                 .iterator();
     }
 
+    public int getMotorId(){
+        return motor_warp.getId();
+    }
+
+    public void saltar(boolean prepSalto, boolean cooldown, int warpCD,boolean terminarSalto) throws TransicionEstadoInvalida{
+        try {
+            motor_warp.saltar(prepSalto, cooldown, warpCD, terminarSalto);
+            consumirCombustible(2);
+            if (cooldown) {
+                aumentarDesgaste(3);
+            }
+            verificarRecursos();
+        } catch (TransicionEstadoInvalida e) {
+            throw e;
+        }
+    }
+
+    public void saltarWarp()throws TransicionEstadoInvalida, IllegalStateException{
+        motor_warp.saltarWarp();
+        consumirEnergia(5);
+        verificarRecursos();
+    }
+
     @Override
     public abstract void interactuar(Nave nave);
 
@@ -190,4 +187,5 @@ public abstract class Nave implements ElementoDelUniverso {
                 + ", desgaste=" + desgaste
                 + ", destruida=" + destruida + "}";
     }
+
 }

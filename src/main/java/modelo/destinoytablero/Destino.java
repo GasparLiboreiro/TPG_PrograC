@@ -8,6 +8,7 @@ import modelo.ElementoDelUniverso;
 
 /** Coordina los intentos de movimiento aleatorio de los elementos del tablero. */
 public class Destino {
+    private static Destino instDestino = null;
     private final Random azar = new Random();
     private Tablero tablero;
 
@@ -23,6 +24,14 @@ public class Destino {
     public Destino(Tablero tablero){
         this.tablero = tablero;
     }
+
+    public static Destino getInstancia(Tablero tablero)
+    {
+        if (instDestino == null)
+            instDestino = new Destino(tablero);
+        return  instDestino;
+    }
+
     /**
      * Selecciona sin repetir la mitad entera de los elementos y realiza un intento
      * de movimiento a una de sus ocho vecinas por cada seleccionado.

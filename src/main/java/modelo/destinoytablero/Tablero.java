@@ -21,7 +21,7 @@ public class Tablero extends Observable {
     private final int x;
     /** Cantidad de columnas del tablero. */
     private final int y;
-    /** Copia de las entradas originales que se redistribuyen. */
+    /** Copia de las entrada    s originales que se redistribuyen. */
     private final ArrayList<ElementoDelUniverso> elementos;
     /** Asociación entre cada casilla ocupada y su elemento. */
     private final HashMap<Posicion, ElementoDelUniverso> ocupacion = new HashMap<Posicion, ElementoDelUniverso>();
