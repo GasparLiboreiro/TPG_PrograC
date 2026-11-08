@@ -3,6 +3,12 @@ package modelo;
 import modelo.excepciones.TransicionEstadoInvalida;
 
 public class MotorWarp {
+    public static int ESTADO_DISPONIBLE = 0;
+    public static int ESTADO_PREPARANDO_SALTO = 1;
+    public static int ESTADO_EN_WARP = 2;
+    public static int ESTADO_ENFRIAMIENTO = 3;
+    public static String[] ESTADO_NOMBRE = {"DISPONIBLE", "PREPARANDO SALTO", "EN WARP", "ENFRIAMIENTO"};
+
     private StateMotorWarp estado;
     private int id=0;
 
@@ -54,5 +60,9 @@ public class MotorWarp {
 
     public int getId(){
         return id;
+    }
+
+    public int getEstado() {
+        return estado.getEstado();
     }
 }

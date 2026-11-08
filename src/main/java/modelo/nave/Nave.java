@@ -60,6 +60,10 @@ public abstract class Nave implements ElementoDelUniverso {
         return desgaste;
     }
 
+    public int getEstadoMotorWarp() {
+        return this.motor_warp.getEstado();
+    }
+
     public void consumirCombustible(int cantidad) {
         verificarEstado();
 
@@ -112,20 +116,26 @@ public abstract class Nave implements ElementoDelUniverso {
         verificarRecursos();
     }
 
-    public void addTripulante(Tripulante tripulante) {
+    /**
+     * Añade un tripulante a la nave</br>
+     * <b>Pre:</b> </br>
+     * - El tripulante debe ser un tripulante valido (no nulo)</br>
+     * @throws Exception si ya hay un tripulante registrado con el mismo identificador o si se intenta añadir un capitan ya habiendo un capitan en la tripulacion
+     * @param tripulante Tripulante a añadir a la nave
+     */
+    public void addTripulante(Tripulante tripulante) throws Exception { // hago que lanze la exepcion en vez de ser runtime para que no rompa el sistema y que lo resuelva
         verificarEstado();
-        if (tripulante == null) {
-            throw new IllegalArgumentException("El tripulante a agregar no puede ser nulo.");
-        }
+        assert tripulante != null : "El tripulante a agregar no puede ser nulo.";
 
         // 1. Validar identidad repetida
         for (Tripulante existente : tripulantes) {
             if (existente.getIdentidad() != null && existente.getIdentidad().equalsIgnoreCase(tripulante.getIdentidad())) {
-                throw new IllegalArgumentException("Ya existe un tripulante registrado con la identidad: " + tripulante.getIdentidad());
+                throw new Exception("Ya existe un tripulante registrado con la identidad: " + tripulante.getIdentidad());
             }
         }
+
         if ("capitan".equalsIgnoreCase(tripulante.getCargo()) && tieneCapitan()) {
-            throw new IllegalStateException("La nave ya cuenta con un Capitán asignado.");
+            throw new Exception("La nave ya cuenta con un Capitán asignado.");
         }
         tripulantes.add(tripulante);
     }

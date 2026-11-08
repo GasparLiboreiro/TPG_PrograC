@@ -28,4 +28,9 @@ public class StateMWEnfriamiento implements StateMotorWarp{
     public void enfriar_motor() {
         motor.setEstado(new StateMWDisponible(motor));
     }
+
+    @Override
+    public int getEstado() {
+        return MotorWarp.ESTADO_ENFRIAMIENTO;
+    }
 }

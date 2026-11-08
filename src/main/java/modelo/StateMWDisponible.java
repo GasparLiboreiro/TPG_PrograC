@@ -28,5 +28,4 @@ public class StateMWDisponible implements StateMotorWarp{
     public void enfriar_motor() throws TransicionEstadoInvalida {
         throw new TransicionEstadoInvalida("MotorWarp no puede enfriarse estando Disponible");
     }
-
 }
