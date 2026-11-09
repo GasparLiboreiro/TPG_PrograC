@@ -120,7 +120,6 @@ public abstract class Mision {
             }
         }
 
-
         if (asistente.getNave().getDestruida()) {
             this.cartelResultado = "La nave fue destruida durante la travesía. Misión " + getCodigo() + " fallida.";
         } else {

@@ -102,7 +102,13 @@ public class Asistente {
     public ElementoDelUniverso analizarPosicion(){
         return tablero.inspeccionarPosicion();
     }
-
+    
+    /**
+     * Genera una ruta paso a paso desde la posicion actual de la nave hasta la posicion del objetivo.
+     * @param objetivo posicion del destino al cual se dirige la nave
+     * @return un objeto ArrayList con la secuencia ordenada del camino
+     * @throws IllegalArgumentException si objetivo es null
+     */
     public boolean usarRCD(Posicion pos, ArrayList<Posicion> camino){
         ElementoDelUniverso[][] elementosCercanos = tablero.observarAlrededores();
         int posI = camino.indexOf(pos);
@@ -110,9 +116,15 @@ public class Asistente {
         int x = camino.get(posI + 1).getX() -  camino.get(posI).getX();
         ElementoDelUniverso proximo = elementosCercanos[x+1][y+1];
         return proximo != null && proximo.esObstaculo();
-
     }
-
+    /**
+     * Genera una ruta paso a paso desde la posicion actual de la nave hasta la posicion del objetivo.
+     * <p><b>Pre:</b> objetivo no puede ser null, debe ser una posicion valida</br></p>
+     * <p><b>Pre:</b> la posicion actual de la nave debe estar previamente inicializada</p>
+     * @param objetivo posicion del destino al cual se dirige la nave
+     * @return un objeto ArrayList con la secuencia ordenada del camino
+     * @throws IllegalArgumentException si objetivo es null
+     */
     public ArrayList<Posicion> generarCamino(Posicion objetivo) {
         if (objetivo == null) {
             throw new IllegalArgumentException("El objetivo no puede ser nulo.");
@@ -124,8 +136,7 @@ public class Asistente {
         ArrayList<Posicion> ruta = new ArrayList<>();
         ruta.add(new Posicion(xActual, yActual));
 
-        while (xActual != objetivo.getX()
-                || yActual != objetivo.getY()) {
+        while (xActual != objetivo.getX() || yActual != objetivo.getY()) {
 
             if (xActual != objetivo.getX()) {
                 xActual += Integer.compare(objetivo.getX(), xActual);

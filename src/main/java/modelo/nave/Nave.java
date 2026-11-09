@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
-public abstract class Nave implements ElementoDelUniverso {
+public abstract class Nave implements ElementoDelUniverso,Batalla {
 
     private final MotorWarp motor_warp;
     private int combustible;
@@ -40,7 +40,8 @@ public abstract class Nave implements ElementoDelUniverso {
         }
     }
 
-    public final void destruir() {
+    //tuve que sacar el final para que se pueda destruir en los enfrentamientos
+    public void destruir() {
         destruida = true;
     }
 
@@ -178,9 +179,13 @@ public abstract class Nave implements ElementoDelUniverso {
         return false;
     }
 
-    public abstract void enfrentar(NaveExploradora otra);
-    public abstract void enfrentar(NaveCarguera otra);
-    public abstract void enfrentar(NaveCombate otra);
+  //el unico proposito de este metodo es hacer mas facil el caso en que se enfrentan dos naves iguales
+    public abstract String getTipo();
+    
+    public abstract boolean gana(Nave obj);
+    public abstract boolean ganaExploradora();
+    public abstract boolean ganaCarguera();
+    public abstract boolean ganaCombate();
 
     @Override
     public String toString() {
