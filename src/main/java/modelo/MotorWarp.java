@@ -1,4 +1,5 @@
 package modelo;
+import modelo.nave.Nave;
 
 import modelo.excepciones.TransicionEstadoInvalida;
 
@@ -9,60 +10,65 @@ public class MotorWarp {
     public static int ESTADO_ENFRIAMIENTO = 3;
     public static String[] ESTADO_NOMBRE = {"DISPONIBLE", "PREPARANDO SALTO", "EN WARP", "ENFRIAMIENTO"};
 
-    private StateMotorWarp estado;
-    private int id=0;
+    /** Combustible que consume un salto simple . */
+    static final int COSTO_COMBUSTIBLE_SALTO = 2;
+    /** Energía que consume un salto warp. */
+    static final int COSTO_ENERGIA_WARP = 5;
+    /** Desgaste que genera el turno de enfriamiento. */
+    static final int DESGASTE_ENFRIAMIENTO = 3;
+    /** Turnos de preparación previos al salto warp. */
+    static final int TURNOS_PREPARACION = 2;
 
-    public MotorWarp()
-    {
+    private final Nave nave;
+    private StateMotorWarp estado;
+
+    public MotorWarp(Nave nave) {
+        this.nave = nave;
         this.estado = new StateMWDisponible(this);
     }
 
-    protected void setEstado(StateMotorWarp estado)
-    {
-        this.estado = estado;
+    /**
+     * Ejecuta el turno del motor con el camino despejado.
+     * @return casillas que avanza la nave (0, 1 o 2)
+     */
+    public int saltar() {
+        return estado.saltar();
     }
 
-    public void saltar(boolean prepSalto, boolean cooldown, int warpCD,boolean terminarSalto) throws TransicionEstadoInvalida{
-        if (prepSalto && !cooldown){
-            preparar_salto();
-        }
-        else if (cooldown && warpCD == 1){
-            enfriar_motor();
-        }
-        else if (terminarSalto){
-            detener();
-        }
+    /**
+     * Ejecuta el turno del motor con un obstáculo adelante.
+     * @return casillas que avanza la nave (0, 1 o 2)
+     */
+    public int saltarWarp() {
+        return estado.saltarWarp();
     }
-
-    public void saltarWarp() throws TransicionEstadoInvalida{
-        arrancar();
-    }
-
-    private void preparar_salto() throws TransicionEstadoInvalida {
-        estado.preparar_salto();
-        id= 1;
-    }
-
-    private void arrancar() throws TransicionEstadoInvalida {
-        estado.arrancar();
-        id= 2;
-    }
-
-    private void detener() throws TransicionEstadoInvalida {
-        estado.detener();
-        id= 3;
-    }
-
-    private void enfriar_motor() throws TransicionEstadoInvalida {
-        estado.enfriar_motor();
-        id= 0;
-    }
-
-    public int getId(){
-        return id;
-    }
-
     public int getEstado() {
         return estado.getEstado();
     }
+    // ---- uso interno de los estados (visibilidad de paquete) ----
+
+    void setEstado(StateMotorWarp estado) {
+        this.estado = estado;
+    }
+
+    Nave getNave() {
+        return nave;
+    }
+
+    boolean hayEnergiaParaWarp() {
+        return nave.getEnergia() >= COSTO_ENERGIA_WARP;
+    }
+
+    /**
+     * Salto simple: avanza una casilla y consume combustible. Si no alcanza,
+     * consume lo que queda (con 0 de combustible la nave se destruye).
+     * @return 1, la casilla que avanza
+     */
+    int saltoNormal() {
+        nave.consumirCombustible(Math.min(COSTO_COMBUSTIBLE_SALTO, nave.getCombustible()));
+        return 1;
+    }
 }
+
+
+

@@ -1,10 +1,12 @@
 package modelo.misiones;
 
-import modelo.nave.Nave;
+import modelo.Asistente;
+
 
 public class MisionIntercepcion extends Mision {
-    public MisionIntercepcion(Nave nave) {
-        super(nave);
+
+    public MisionIntercepcion(Asistente asistente) {
+        super(asistente);
     }
 
     @Override public String getCodigo() {

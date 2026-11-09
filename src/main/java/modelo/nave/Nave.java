@@ -23,7 +23,7 @@ public abstract class Nave implements ElementoDelUniverso {
         this.combustible = combustible;
         this.energia = energia;
         this.desgaste = desgaste;
-        this.motor_warp = new MotorWarp();
+        this.motor_warp = new MotorWarp(this);
 
         verificarEstado();
     }
@@ -110,12 +110,6 @@ public abstract class Nave implements ElementoDelUniverso {
             this.energia = 100;
         }
     }
-
-    public void recibirDanio(int cantidad) {
-        desgaste += cantidad;
-        verificarRecursos();
-    }
-
     /**
      * Añade un tripulante a la nave</br>
      * <b>Pre:</b> </br>
@@ -159,31 +153,30 @@ public abstract class Nave implements ElementoDelUniverso {
                 .iterator();
     }
 
-    public int getMotorId(){
-        return motor_warp.getId();
+    /**
+     * Turno de movimiento con el camino despejado. Delega en el motor warp.
+     * @return casillas que avanza la nave (0, 1 o 2)
+     */
+    public int saltar() {
+        verificarEstado();
+        return motor_warp.saltar();
     }
 
-    public void saltar(boolean prepSalto, boolean cooldown, int warpCD,boolean terminarSalto) throws TransicionEstadoInvalida{
-        try {
-            motor_warp.saltar(prepSalto, cooldown, warpCD, terminarSalto);
-            consumirCombustible(2);
-            if (cooldown) {
-                aumentarDesgaste(3);
-            }
-            verificarRecursos();
-        } catch (TransicionEstadoInvalida e) {
-            throw e;
-        }
-    }
-
-    public void saltarWarp()throws TransicionEstadoInvalida, IllegalStateException{
-        motor_warp.saltarWarp();
-        consumirEnergia(5);
-        verificarRecursos();
+    /**
+     * Turno de movimiento con un obstáculo adelante. Delega en el motor warp.
+     * @return casillas que avanza la nave (0, 1 o 2)
+     */
+    public int saltarWarp() {
+        verificarEstado();
+        return motor_warp.saltarWarp();
     }
 
     @Override
     public abstract void interactuar(Nave nave);
+    @Override
+    public boolean esObstaculo() {
+        return false;
+    }
 
     public abstract void enfrentar(NaveExploradora otra);
     public abstract void enfrentar(NaveCarguera otra);

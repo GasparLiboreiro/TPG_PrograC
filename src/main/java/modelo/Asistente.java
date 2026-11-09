@@ -7,6 +7,7 @@ import modelo.tripulantes.*;
 import modelo.misiones.*;
 import modelo.destinoytablero.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Asistente {
     private Nave nave;
@@ -17,6 +18,17 @@ public class Asistente {
         this.nave = nave;
         this.bitacora_general = new Bitacora();
         this.tablero = tablero;
+    }
+    public void add_tripulante(Tripulante tripulante) throws Exception {
+        this.nave.addTripulante(tripulante);
+    }
+
+    public Iterator<Tripulante> get_tripulantes() {
+        return this.nave.getTripulantes();
+    }
+
+    public int getEstadoMotorWarp() {
+        return this.nave.getEstadoMotorWarp();
     }
 
     public InformeMision ejecutarMision(Mision mision) {
@@ -74,9 +86,6 @@ public class Asistente {
 
 
     //REALACIONADO A MISIONES ----
-    public int getMotorId(){
-        return nave.getMotorId();
-    }
 
     public Nave getNave() {
         return nave;
@@ -99,7 +108,9 @@ public class Asistente {
         int posI = camino.indexOf(pos);
         int y = camino.get(posI + 1).getY() - camino.get(posI).getY();
         int x = camino.get(posI + 1).getX() -  camino.get(posI).getX();
-        return elementosCercanos[x+1][y+1] != null;
+        ElementoDelUniverso proximo = elementosCercanos[x+1][y+1];
+        return proximo != null && proximo.esObstaculo();
+
     }
 
     public ArrayList<Posicion> generarCamino(Posicion objetivo) {
@@ -128,22 +139,17 @@ public class Asistente {
         return ruta;
     }
 
-    public void saltar(boolean prepSalto, boolean cooldown, int warpCD,boolean terminarSalto, Posicion pos) throws TransicionEstadoInvalida{
-        nave.saltar(prepSalto, cooldown, warpCD, terminarSalto);
-        tablero.moverNave(pos);
+    /**
+     * Ordena el movimiento del turno según lo que detectó el radar de corto alcance.
+     * @param hayObstaculo true si hay un obstáculo en la próxima casilla del camino
+     * @return casillas que avanza la nave (0, 1 o 2)
+     */
+    public int ordenarSalto(boolean hayObstaculo) {
+        return hayObstaculo ? nave.saltarWarp() : nave.saltar();
     }
 
-    public void saltarWarp(Posicion pos) throws TransicionEstadoInvalida {
-        nave.saltarWarp();
-        tablero.moverNave(pos);
-    }
-
-    public boolean puedeWarp(){
-        return getEnergiaNave() >= 5;
-    }
-
-    public int getEnergiaNave(){
-        return nave.getEnergia();
+    public void moverNave(Posicion posicion) {
+        tablero.moverNave(posicion);
     }
 
     public Tablero getTablero() {

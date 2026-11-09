@@ -2,31 +2,32 @@ package modelo;
 
 import modelo.excepciones.TransicionEstadoInvalida;
 
-public class StateMWEnWarp implements StateMotorWarp{
-    private MotorWarp motor;
+public class StateMWEnWarp implements StateMotorWarp {
+    private final MotorWarp motor;
 
     public StateMWEnWarp(MotorWarp motor) {
         this.motor = motor;
     }
 
     @Override
-    public void preparar_salto() throws TransicionEstadoInvalida {
-        throw new TransicionEstadoInvalida("MotorWarp no puede preparar salto estando en warp");
+    public int saltar() {
+        return ejecutarSalto();
     }
 
     @Override
-    public void arrancar() throws TransicionEstadoInvalida {
-        throw new TransicionEstadoInvalida("MotorWarp no puede arrancar estando en warp");
+    public int saltarWarp() {
+        return ejecutarSalto();
     }
 
-    @Override
-    public void detener() {
+    private int ejecutarSalto() {
+        if (!motor.hayEnergiaParaWarp()) {
+            // los recursos ya no están: se aborta el warp y se hace un salto simple
+            motor.setEstado(new StateMWDisponible(motor));
+            return motor.saltoNormal();
+        }
+        motor.getNave().consumirEnergia(MotorWarp.COSTO_ENERGIA_WARP);
         motor.setEstado(new StateMWEnfriamiento(motor));
-    }
-
-    @Override
-    public void enfriar_motor() throws TransicionEstadoInvalida {
-        throw new TransicionEstadoInvalida("MotorWarp no puede enfriarse estando en warp");
+        return 2;
     }
 
     @Override

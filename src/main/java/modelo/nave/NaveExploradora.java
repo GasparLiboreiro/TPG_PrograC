@@ -8,6 +8,9 @@ public class NaveExploradora extends Nave {
 
     @Override
     public void interactuar(Nave nave) {
+        if (getDestruida()) {
+            return; // los restos de una nave destruida no combaten
+        }
         nave.enfrentar(this);
     }
 

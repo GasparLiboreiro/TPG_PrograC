@@ -2,6 +2,11 @@ package controlador;
 
 import modelo.Asistente;
 import modelo.tripulantes.TripulanteFactory;
+import modelo.nave.Nave;
+import modelo.nave.NaveFactory;
+import modelo.destinoytablero.Tablero;
+import modelo.destinoytablero.GeneradorDeUniverso;
+
 import vista.DatosTripulante;
 import vista.IVista;
 
@@ -26,8 +31,9 @@ public class Controlador implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals("inicializar")) {
             try {
-                this.asistente = new Asistente();
-                this.asistente.create_nave(vista.getTipoNave());
+                Nave nave = NaveFactory.crearNave(vista.getTipoNave());
+                Tablero tablero = GeneradorDeUniverso.porDefecto().crearTablero();
+                this.asistente = new Asistente(nave, tablero);
                 DatosTripulante datos_capitan = vista.getDatosCapitan();
                 this.asistente.add_tripulante(TripulanteFactory.crearTripulante(
                             datos_capitan.getOficio(),

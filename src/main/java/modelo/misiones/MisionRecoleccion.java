@@ -1,10 +1,11 @@
 package modelo.misiones;
 
-import modelo.nave.Nave;
+import modelo.Asistente;
+
 
 public class MisionRecoleccion extends Mision {
-    public MisionRecoleccion(Nave nave) {
-        super(nave);
+    public MisionRecoleccion(Asistente asistente) {
+        super(asistente);
     }
 
     @Override public String getCodigo() {
@@ -14,7 +15,7 @@ public class MisionRecoleccion extends Mision {
         return 4;
     }
     @Override public int getCostoEnergia() {
-        return 5;
+        return 10;
     }
     @Override public int getCostoDesgaste() {
         return 4;

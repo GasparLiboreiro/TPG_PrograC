@@ -2,31 +2,28 @@ package modelo;
 
 import modelo.excepciones.TransicionEstadoInvalida;
 
-public class StateMWEnfriamiento implements StateMotorWarp{
-    private MotorWarp motor;
+public class StateMWEnfriamiento implements StateMotorWarp {
+    private final MotorWarp motor;
 
     public StateMWEnfriamiento(MotorWarp motor) {
         this.motor = motor;
     }
 
+    // Durante el enfriamiento la nave espera, sin importar lo que detecte el radar.
     @Override
-    public void preparar_salto() throws TransicionEstadoInvalida {
-        throw new TransicionEstadoInvalida("MotorWarp no puede preparar salto estando en enfriamiento");
+    public int saltar() {
+        return enfriar();
     }
 
     @Override
-    public void arrancar() throws TransicionEstadoInvalida {
-        throw new TransicionEstadoInvalida("MotorWarp no puede arrancar estando en enfriamiento");
+    public int saltarWarp() {
+        return enfriar();
     }
 
-    @Override
-    public void detener() throws TransicionEstadoInvalida {
-        throw new TransicionEstadoInvalida("MotorWarp no puede detenerse estando en enfriamiento");
-    }
-
-    @Override
-    public void enfriar_motor() {
+    private int enfriar() {
+        motor.getNave().aumentarDesgaste(MotorWarp.DESGASTE_ENFRIAMIENTO);
         motor.setEstado(new StateMWDisponible(motor));
+        return 0;
     }
 
     @Override

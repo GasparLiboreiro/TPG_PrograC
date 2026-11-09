@@ -2,10 +2,20 @@ package modelo;
 
 import modelo.excepciones.TransicionEstadoInvalida;
 
-public interface StateMotorWarp { // los estados disponibles son: Disponible, Preparando salto, En warp, Enfriamiento
-    public void preparar_salto() throws TransicionEstadoInvalida;
-    public void arrancar() throws TransicionEstadoInvalida;
-    public void detener() throws TransicionEstadoInvalida;
-    public void enfriar_motor() throws TransicionEstadoInvalida;
+public interface StateMotorWarp {
+    /**
+     * Turno en el que el radar de corto alcance no detectó obstáculos.
+     * @return casillas que avanza la nave en este turno (0, 1 o 2)
+     */
+    public int saltar();
+
+    /**
+     * Turno en el que el radar de corto alcance detectó un obstáculo en la
+     * próxima casilla del camino.
+     * @return casillas que avanza la nave en este turno (0, 1 o 2)
+     */
+    public int saltarWarp();
+
+    /** @return constante de estado definida en {@link MotorWarp} */
     public int getEstado();
 }

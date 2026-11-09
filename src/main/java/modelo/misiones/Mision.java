@@ -21,7 +21,9 @@ public abstract class Mision {
     protected final Bitacora bitacora;
     protected String cartelResultado;
     protected boolean exitosa;
-    protected ArrayList<Posicion> camino = new ArrayList();
+    protected ArrayList<Posicion> camino = new ArrayList<>();
+    private int pausaTurnoMs = 300; // para que la vista pueda mostrar el avance
+
 
     public Mision(Asistente asistente) {
         if (asistente == null) {
@@ -73,123 +75,67 @@ public abstract class Mision {
     }
 
     protected void ejecutar() {
-        Destino destino =  Destino.getInstancia(asistente.getTablero());
+        Destino destino = Destino.getInstancia(asistente.getTablero());
+        Nave nave = asistente.getNave();
+        int indiceCamino = 0;                        // posición actual de la nave dentro de camino
+        ElementoDelUniverso ultimoElemento = null;   // evita interactuar dos veces con el mismo elemento mientras la nave espera
 
-        boolean peligro = false;
-        int iP = 0;
-        boolean prepWarp = false;
-        boolean cooling = false;
-        boolean endWarp = false;
-        int warpCD = 0;
-        int prepCD = 0;
-        ElementoDelUniverso elemento;
-
-        asistente.getNave().consumirCombustible(getCostoCombustible());
-        asistente.getNave().consumirEnergia(getCostoEnergia());
-        asistente.getNave().aumentarDesgaste(getCostoDesgaste());
+        nave.consumirCombustible(getCostoCombustible());
+        nave.consumirEnergia(getCostoEnergia());
+        nave.aumentarDesgaste(getCostoDesgaste());
         bitacora.registrar("Consumo aplicado: -" + getCostoCombustible() + " comb, -" +
                 getCostoEnergia() + " energ, +" + getCostoDesgaste() + " desgaste.");
 
-
-
-        while (!asistente.getNave().getDestruida() && !asistente.getPosicion().equals(objetivo)) {
-            elemento = asistente.analizarPosicion();
-
-            if (elemento != null) {
-                elemento.interactuar(asistente.getNave());
-                //Analizar como añade la bitacora.
+        while (!nave.getDestruida() && !asistente.getPosicion().equals(objetivo)) {
+            // A. Turno de la nave
+            // 1. Inspección de la posición actual
+            ElementoDelUniverso elemento = asistente.analizarPosicion();
+            if (elemento != null && elemento != ultimoElemento) {
+                elemento.interactuar(nave);
+                ultimoElemento = elemento;
             }
-            // se usa el radar de corta distancia y se verifica si hay peligros en la zona.
-            peligro = asistente.usarRCD(asistente.getPosicion(), camino);
-
-            //Turno nave
-            if (!asistente.getNave().getDestruida()) {
-                if (peligro) {
-                    if (asistente.getMotorId() == 1 && prepCD == 2 && asistente.puedeWarp()) {
-                        try {
-                            prepCD = 0;
-                            asistente.saltarWarp(camino.get((iP + 2>= camino.size()) ? (camino.size() -1) : iP + 2));
-                            cooling = true;
-                            if (iP + 2 >= camino.size()) {
-                                iP = camino.size() - 1;
-                            }
-                            else{
-                                iP += 2;
-                            }
-                            endWarp = true;
-                        }
-                        catch (TransicionEstadoInvalida e) {
-                            System.out.println(e.getMessage());
-                        }
-                    } else if (asistente.getMotorId() == 0 && !cooling) {
-                        prepCD = 0;
-                        prepWarp = true;
-                        try{
-                            asistente.saltar(prepWarp, cooling, warpCD, endWarp,camino.get(iP + 1));
-                            iP++;
-                            endWarp = false;
-                        }
-                        catch (TransicionEstadoInvalida e){
-                            //ver que se hace acá
-                        }
-                    }
-                    else {
-                        prepWarp = false;
-                        if (cooling && warpCD<1){
-                            warpCD++;
-                        }
-                        if (asistente.getMotorId() == 1 && prepCD < 2 && !cooling) {
-                            prepCD++;
-                        }
-                        try{
-                            asistente.saltar(prepWarp, cooling, warpCD, endWarp,camino.get(iP + 1));
-
-                            if (cooling && warpCD==1){
-                                cooling = false;
-                            }
-
-                            iP++;
-                            endWarp = false;
-                        }
-                        catch (TransicionEstadoInvalida e){
-                            //ver que se hace acá
-                        }
-                    }
-                } else {
-                    if (asistente.getMotorId() == 1 && prepCD < 2 && !cooling){
-                        prepCD++;
-                    }
-                    if (cooling && warpCD<1){
-                        warpCD++;
-                    }
-                    try{
-                        prepWarp = false;
-                        asistente.saltar(prepWarp, cooling, warpCD, endWarp,camino.get(iP + 1));
-                        iP++;
-                        if (cooling && warpCD==1){
-                            cooling = false;
-                        }
-                        endWarp = false;
-                    }
-                    catch (TransicionEstadoInvalida e){
-                        //ver que se hace acá
-                    }
-                }
-                //Turno del destino
-                destino.turnoDestino();
+            if (nave.getDestruida()) {
+                break;
             }
 
+            // 2. Escaneo con el radar de corto alcance
+            boolean hayObstaculo = asistente.usarRCD(asistente.getPosicion(), camino);
+
+            // 3. Planificación y movimiento: el estado del motor decide cuántas casillas avanza
+            int casillas = asistente.ordenarSalto(hayObstaculo);
+            if (casillas > 0) {
+                indiceCamino = Math.min(indiceCamino + casillas, camino.size() - 1);
+                asistente.moverNave(camino.get(indiceCamino));
+                ultimoElemento = null;
+            }
+
+            // B. Turno del tablero
+            destino.turnoDestino();
+
+            try {
+                Thread.sleep(pausaTurnoMs);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
 
-        this.cartelResultado = ejecutarMision();
+
+        if (asistente.getNave().getDestruida()) {
+            this.cartelResultado = "La nave fue destruida durante la travesía. Misión " + getCodigo() + " fallida.";
+        } else {
+            this.cartelResultado = ejecutarMision();
+        }
         bitacora.registrar("Acción realizada: " + this.cartelResultado);
+
     }
     protected void ejecutarHook() {
     }
 
     protected void evaluar() {
-        this.exitosa = (this.cartelResultado != null && !this.cartelResultado.isEmpty());
+        this.exitosa = !asistente.getNave().getDestruida() && this.cartelResultado != null && !this.cartelResultado.isEmpty();
         bitacora.registrar("Evaluación de la misión: " + (exitosa ? "ÉXITO" : "FALLO"));
+
     }
     protected void evaluarHook() {
     }
@@ -201,7 +147,13 @@ public abstract class Mision {
     protected InformeMision cerrarHook(InformeMision informe_basico) {
         return informe_basico;
     }
-
+    /**
+     * Cambia la pausa entre turnos de la travesía.
+     * @param pausaTurnoMs milisegundos de pausa, mayor o igual a 0
+     */
+    public void setPausaTurno(int pausaTurnoMs) {
+        this.pausaTurnoMs = pausaTurnoMs;
+    }
 
     // Getters para InformeMision
     public boolean isExitosa() {

@@ -10,4 +10,8 @@ public class EstacionDeCarga implements ElementoDelUniverso {
         nave.cargarCombustible(monto);
         nave.cargarEnergia(monto);
     }
+    @Override
+    public boolean esObstaculo() {
+        return false; // es una ayuda: conviene pasar por ella, no esquivarla
+    }
 }
