@@ -16,7 +16,7 @@ public class MisionFactory {
      * @throws IllegalArgumentException si asistente es null o el tipo es invalido
      * @return Instancia de una mision del tipo especificado
      */
-    public static Mision crearMision(String tipo, Asistente asistente) { // quite la
+    public static Mision crearMision(String tipo, Asistente asistente) {
         if (asistente==null) {
         	throw new IllegalArgumentException("MisionFactory.crearMision() recibio un asistente nula");
         }

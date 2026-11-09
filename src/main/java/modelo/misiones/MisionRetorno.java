@@ -1,6 +1,7 @@
 package modelo.misiones;
 
 import modelo.Asistente;
+import modelo.nave.Nave;
 
 
 public class MisionRetorno extends Mision {
@@ -22,8 +23,22 @@ public class MisionRetorno extends Mision {
     }
 
     @Override
-    protected String ejecutarMision() { //cuando se desarrollen las misiones
-        return "Cartel M3: Nave retornada a la base de operaciones segura.";
+    protected String ejecutarMision() {
+    	Nave navePropia = asistente.getNave();
+    	int combustibleFaltante = navePropia.getCombustibleMax() - navePropia.getCombustible();
+        int energiaFaltante = navePropia.getEnergiaMax() - navePropia.getEnergia();
+
+        if (combustibleFaltante > 0) {
+        	navePropia.cargarCombustible(combustibleFaltante);
+        }
+        if (energiaFaltante > 0) {
+        	navePropia.cargarEnergia(energiaFaltante);
+        }
+        
+        navePropia.setDesgaste(0);
+
+        bitacora.registrar("Arribo exitoso a la base, recursos recuperados.");
+        return "Mision M3: Nave retornada a la base de operaciones segura.";
     }
 
     @Override

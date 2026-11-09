@@ -8,11 +8,9 @@ import modelo.Bitacora;
 import modelo.ElementoDelUniverso;
 import modelo.excepciones.EstadoInvalido;
 import modelo.Asistente;
-import modelo.excepciones.TransicionEstadoInvalida;
 import modelo.nave.*;
 import modelo.destinoytablero.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public abstract class Mision {

@@ -3,19 +3,18 @@ package modelo.nave;
 import modelo.ElementoDelUniverso;
 import modelo.MotorWarp;
 import modelo.tripulantes.*;
-import modelo.excepciones.TransicionEstadoInvalida;
-
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
-public abstract class Nave implements ElementoDelUniverso {
+public abstract class Nave implements ElementoDelUniverso,Batalla {
 
     private final MotorWarp motor_warp;
     private int combustible;
     private int energia;
     private int desgaste;
     private boolean destruida;
+    private final int combustibleMax;
+    private final int energiaMax;
 
     private final ArrayList<Tripulante> tripulantes = new ArrayList<>();
 
@@ -24,11 +23,21 @@ public abstract class Nave implements ElementoDelUniverso {
         this.energia = energia;
         this.desgaste = desgaste;
         this.motor_warp = new MotorWarp(this);
+		this.combustibleMax = combustible;
+		this.energiaMax = energia;
 
         verificarEstado();
     }
 
-    private void verificarEstado() {
+    public int getEnergiaMax() {
+		return energiaMax;
+	}
+
+	public int getCombustibleMax() {
+		return combustibleMax;
+	}
+
+	private void verificarEstado() {
         if (destruida) {
             throw new IllegalStateException("La nave está destruida.");
         }
@@ -40,7 +49,8 @@ public abstract class Nave implements ElementoDelUniverso {
         }
     }
 
-    public final void destruir() {
+    //tuve que sacar el final para que se pueda destruir en los enfrentamientos
+    public void destruir() {
         destruida = true;
     }
 
@@ -58,6 +68,10 @@ public abstract class Nave implements ElementoDelUniverso {
 
     public int getDesgaste() {
         return desgaste;
+    }
+    
+    public void setDesgaste(int cantidad) {
+    	this.desgaste = cantidad;
     }
 
     public int getEstadoMotorWarp() {
@@ -178,9 +192,13 @@ public abstract class Nave implements ElementoDelUniverso {
         return false;
     }
 
-    public abstract void enfrentar(NaveExploradora otra);
-    public abstract void enfrentar(NaveCarguera otra);
-    public abstract void enfrentar(NaveCombate otra);
+  //el unico proposito de este metodo es hacer mas facil el caso en que se enfrentan dos naves iguales
+    public abstract String getTipo();
+    
+    public abstract boolean gana(Nave obj);
+    public abstract boolean ganaExploradora();
+    public abstract boolean ganaCarguera();
+    public abstract boolean ganaCombate();
 
     @Override
     public String toString() {
