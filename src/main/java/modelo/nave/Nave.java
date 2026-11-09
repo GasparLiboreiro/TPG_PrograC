@@ -3,11 +3,8 @@ package modelo.nave;
 import modelo.ElementoDelUniverso;
 import modelo.MotorWarp;
 import modelo.tripulantes.*;
-import modelo.excepciones.TransicionEstadoInvalida;
-
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
 public abstract class Nave implements ElementoDelUniverso,Batalla {
 
@@ -16,6 +13,8 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
     private int energia;
     private int desgaste;
     private boolean destruida;
+    private final int combustibleMax;
+    private final int energiaMax;
 
     private final ArrayList<Tripulante> tripulantes = new ArrayList<>();
 
@@ -24,11 +23,21 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
         this.energia = energia;
         this.desgaste = desgaste;
         this.motor_warp = new MotorWarp(this);
+		this.combustibleMax = combustible;
+		this.energiaMax = energia;
 
         verificarEstado();
     }
 
-    private void verificarEstado() {
+    public int getEnergiaMax() {
+		return energiaMax;
+	}
+
+	public int getCombustibleMax() {
+		return combustibleMax;
+	}
+
+	private void verificarEstado() {
         if (destruida) {
             throw new IllegalStateException("La nave está destruida.");
         }
@@ -59,6 +68,10 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
 
     public int getDesgaste() {
         return desgaste;
+    }
+    
+    public void setDesgaste(int cantidad) {
+    	this.desgaste = cantidad;
     }
 
     public int getEstadoMotorWarp() {

@@ -1,11 +1,15 @@
 package modelo.misiones;
 
+import java.util.Random;
+
 import modelo.Asistente;
 
-
 public class MisionRecoleccion extends Mision {
+	private int gemasRecolectadas;
+	
     public MisionRecoleccion(Asistente asistente) {
         super(asistente);
+        this.gemasRecolectadas = 0;
     }
 
     @Override public String getCodigo() {
@@ -22,8 +26,11 @@ public class MisionRecoleccion extends Mision {
     }
 
     @Override
-    protected String ejecutarMision() { //cuando se desarrollen las misiones
-        return "Cartel M2: Muestra recolectada e inventariada de forma segura.";
+    protected String ejecutarMision() {
+    	Random random = new Random();
+        this.gemasRecolectadas = random.nextInt(81) + 20;
+        bitacora.registrar("Extracción exitosa en punto de interés. Gemas obtenidas: " + gemasRecolectadas);
+        return "Mision M2: Muestra recolectada e inventariada de forma segura.";
     }
 
     @Override

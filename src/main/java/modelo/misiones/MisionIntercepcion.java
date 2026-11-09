@@ -46,6 +46,7 @@ public class MisionIntercepcion extends Mision {
             		propiaNave.consumirCombustible(combustibleRequerido);
             		naveAliada.cargarCombustible(combustibleRequerido);
             	}
+            	bitacora.registrar("Asistencia completada. Se transfirieron " + energiaRequerida + " de energía y " + combustibleRequerido + " de combustible.");
             	return "Mision M1: Intercepción y asistencia completada con éxito.";
             } else {
             	return "Mision M1: Intercepción y asistencia no completada por falta de recursos.";
