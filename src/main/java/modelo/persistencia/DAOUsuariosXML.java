@@ -5,7 +5,7 @@ import java.beans.XMLEncoder;
 import java.io.*;
 import java.util.ArrayList;
 
-public class SistemaCuentasConXML implements DAOUsuarios {
+public class DAOUsuariosXML implements DAOUsuarios {
     protected static final String NOMBRE_ARCHIVO_XML = "usersdb.xml";
 
     private ArrayList<DTOUsuario> getUsuarios() {
