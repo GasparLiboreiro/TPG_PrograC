@@ -13,6 +13,7 @@ public class Asistente {
     private Nave nave;
     private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
     private final Tablero tablero;
+    private Posicion objetivoActual;
 
     public Asistente(Nave nave, Tablero tablero) {
         this.nave = nave;
@@ -96,7 +97,12 @@ public class Asistente {
     }
 
     public Posicion usarRLD(){
-        return tablero.obtenerObjetivo();
+        this.objetivoActual = tablero.obtenerObjetivo();
+        return this.objetivoActual;
+    }
+
+    public Posicion getObjetivoActual() {
+        return this.objetivoActual;
     }
 
     public ElementoDelUniverso analizarPosicion(){

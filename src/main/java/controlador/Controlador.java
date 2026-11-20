@@ -6,10 +6,14 @@ import modelo.nave.Nave;
 import modelo.nave.NaveFactory;
 import modelo.destinoytablero.Tablero;
 import modelo.destinoytablero.GeneradorDeUniverso;
+import modelo.misiones.Mision;
+import modelo.misiones.MisionFactory;
+import modelo.misiones.InformeMision;
 
 import vista.DatosTripulante;
 import vista.IVista;
 
+import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -58,6 +62,39 @@ public class Controlador implements ActionListener {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }
+        } else if (e.getActionCommand().equals("ejecutar_mision")) {
+            ejecutarMisionSeleccionada();
+        } else if (e.getActionCommand().equals("reiniciar")) {
+            this.asistente = null;
+            this.vista.iniciarConfiguracionNave();
+}
+    }
+
+    private void ejecutarMisionSeleccionada() {
+        String tipoMision = vista.getTipoMision();
+        vista.setControlesMisionHabilitados(false);
+
+        // Lanzamos la misión en un hilo separado para no congelar la interfaz Swing
+        new Thread(() -> {
+            try {
+                Mision mision = MisionFactory.crearMision(tipoMision, asistente);
+                InformeMision informe = asistente.ejecutarMision(mision);
+
+                // Volvemos al hilo de Swing para actualizar los componentes visuales
+                SwingUtilities.invokeLater(() -> {
+                    vista.actualizarVistaJuego(informe);
+                    if (!asistente.getNave().getDestruida()) {
+                        vista.setControlesMisionHabilitados(true);
+                    }
+                });
+            } catch (Exception ex) {
+                SwingUtilities.invokeLater(() -> {
+                    vista.mostrarError(ex.getMessage());
+                    if (!asistente.getNave().getDestruida()) {
+                        vista.setControlesMisionHabilitados(true);
+                    }
+                });
+            }
+        }).start();
     }
 }

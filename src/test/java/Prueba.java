@@ -1,3 +1,5 @@
+import javax.swing.SwingUtilities;
+
 import controlador.Controlador;
 import vista.IVista;
 import vista.Ventana;
@@ -5,11 +7,12 @@ import vista.Ventana;
 
 
 public class Prueba {
-
     public static void main(String[] args) {
-        Controlador controlador = new Controlador();
-        IVista vista = new Ventana(controlador);
-        controlador.setVista(vista);
-        vista.iniciarConfiguracionNave();
+        SwingUtilities.invokeLater(() -> {
+            Controlador controlador = new Controlador();
+            Ventana ventana = new Ventana(controlador);
+            controlador.setVista(ventana);
+            ventana.iniciarConfiguracionNave();
+        });
     }
 }
