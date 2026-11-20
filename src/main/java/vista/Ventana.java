@@ -73,7 +73,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     public Ventana(ActionListener listenerFinalizar) {
         super("Configuración de la nave");
         this.listenerFinalizar = listenerFinalizar;
-        construirInterfaz();
+        SwingUtilities.invokeLater(this::construirInterfaz);
     }
 
     private void construirInterfaz() {
@@ -280,6 +280,7 @@ public class Ventana extends JFrame implements IVista, Observador {
 
     @Override
     public void iniciarConfiguracionNave() {
+        SwingUtilities.invokeLater(() -> {
         if (this.asistenteActual != null) {
             this.asistenteActual.getTablero().quitarObservador(this);
         }
@@ -296,6 +297,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         revalidate();
         repaint();
         this.setVisible(true);
+        });
     }
 
     @Override
@@ -412,9 +414,10 @@ public class Ventana extends JFrame implements IVista, Observador {
     }
 
     public void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Datos inválidos",
-                JOptionPane.ERROR_MESSAGE);
-    }
+        SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(this, mensaje, "Datos inválidos",
+            JOptionPane.ERROR_MESSAGE));
+    }   
     @Override
     public String getTipoMision() {
         return (String) selectorMision.getSelectedItem();
@@ -422,15 +425,19 @@ public class Ventana extends JFrame implements IVista, Observador {
 
     @Override
     public void actualizarVistaJuego(InformeMision informe) {
-        areaResumen.setText(crearResumenJuego(this.asistenteActual, informe));
-        etiquetaEstado.setText("Estado del motor Warp: "
+        SwingUtilities.invokeLater(() -> {
+            areaResumen.setText(crearResumenJuego(this.asistenteActual, informe));
+            etiquetaEstado.setText("Estado del motor Warp: "
                 + MotorWarp.ESTADO_NOMBRE[this.asistenteActual.getEstadoMotorWarp()]);
+    });
     }
 
     @Override
     public void setControlesMisionHabilitados(boolean habilitado) {
-        botonEjecutarMision.setEnabled(habilitado);
-        selectorMision.setEnabled(habilitado);
+        SwingUtilities.invokeLater(() -> {
+            botonEjecutarMision.setEnabled(habilitado);
+            selectorMision.setEnabled(habilitado);
+        });
     }
 
     private JPanel crearPanelTablero(Tablero tablero) {
@@ -461,7 +468,11 @@ public class Ventana extends JFrame implements IVista, Observador {
 @Override
 public void actualizar() {
     if (this.asistenteActual != null) {
-        SwingUtilities.invokeLater(() -> refrescarGrilla(this.asistenteActual.getTablero()));
+        SwingUtilities.invokeLater(() -> {
+            refrescarGrilla(this.asistenteActual.getTablero());
+            etiquetaEstado.setText("Estado del motor Warp: "
+                    + MotorWarp.ESTADO_NOMBRE[this.asistenteActual.getEstadoMotorWarp()]);
+        });
     }
 }
 
