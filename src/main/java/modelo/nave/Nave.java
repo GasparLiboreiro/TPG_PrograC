@@ -12,6 +12,7 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
     private int combustible;
     private int energia;
     private int desgaste;
+    private int gemas;
     private boolean destruida;
     private final int combustibleMax;
     private final int energiaMax;
@@ -22,6 +23,7 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
         this.combustible = combustible;
         this.energia = energia;
         this.desgaste = desgaste;
+        this.gemas = 0;
         this.motor_warp = new MotorWarp(this);
 		this.combustibleMax = combustible;
 		this.energiaMax = energia;
@@ -36,6 +38,7 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
 	public int getCombustibleMax() {
 		return combustibleMax;
 	}
+    public int getGemas() { return gemas; }
 
 	private void verificarEstado() {
         if (destruida) {
@@ -85,7 +88,7 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
             throw new IllegalStateException("Combustible insuficiente.");
         }
 
-        combustible -= cantidad;
+        combustible = Math.max(0, combustible - cantidad);;
         verificarRecursos();
     }
 
@@ -96,14 +99,14 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
             throw new IllegalStateException("Energía insuficiente.");
         }
 
-        energia -= cantidad;
+        energia = Math.max(0, energia - cantidad);
         verificarRecursos();
     }
 
     public void aumentarDesgaste(int cantidad) {
         verificarEstado();
 
-        desgaste += Math.min(cantidad, 100 - desgaste);
+        desgaste += Math.min(100, desgaste + cantidad);
         verificarRecursos();
     }
 
@@ -189,7 +192,7 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
     public abstract void interactuar(Nave nave);
     @Override
     public boolean esObstaculo() {
-        return false;
+        return true;
     }
 
   //el unico proposito de este metodo es hacer mas facil el caso en que se enfrentan dos naves iguales
