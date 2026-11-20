@@ -6,6 +6,7 @@
 package modelo.misiones;
 import modelo.Bitacora;
 import modelo.ElementoDelUniverso;
+import modelo.MotorWarp;
 import modelo.excepciones.EstadoInvalido;
 import modelo.Asistente;
 import modelo.nave.*;
@@ -98,9 +99,15 @@ public abstract class Mision {
 
             // 2. Escaneo con el radar de corto alcance
             boolean hayObstaculo = asistente.usarRCD(asistente.getPosicion(), camino);
-
+            if (hayObstaculo) {
+                bitacora.registrar("Obstáculo detectado. Motor Warp ["
+                + MotorWarp.ESTADO_NOMBRE[asistente.getEstadoMotorWarp()] + "].");
+            }   
             // 3. Planificación y movimiento: el estado del motor decide cuántas casillas avanza
             int casillas = asistente.ordenarSalto(hayObstaculo);
+            if (casillas == 2) {
+                bitacora.registrar("¡Salto Warp ejecutado! La nave avanzó 2 casillas evadiendo el obstáculo.");
+            }
             if (casillas > 0) {
                 indiceCamino = Math.min(indiceCamino + casillas, camino.size() - 1);
                 asistente.moverNave(camino.get(indiceCamino));
