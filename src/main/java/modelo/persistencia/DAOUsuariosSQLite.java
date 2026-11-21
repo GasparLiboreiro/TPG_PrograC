@@ -10,10 +10,10 @@ public class DAOUsuariosSQLite implements DAOUsuarios {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:test.db");
+            c = DriverManager.getConnection("jdbc:sqlite:usuarios.db");
             prepararDB();
         } catch ( Exception e ) {
-            throw new RuntimeException("DAOUsuariosSQLite no pudo inciarse: "+e.getMessage());
+            throw new RuntimeException("DAOUsuariosSQLite no pudo inciarse: "+e);
         }
     }
 
