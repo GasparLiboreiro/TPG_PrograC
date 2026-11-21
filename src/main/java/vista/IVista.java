@@ -16,4 +16,9 @@ public interface IVista{
     void actualizarVistaJuego(InformeMision informe);
     void mostrarError(String mensaje);
     void setControlesMisionHabilitados(boolean habilitado);
+
+    String getNombre();
+    String getContrasenia();
+    void iniciarLogin();
+    void notificarErrorLogin(String mensaje);
 }

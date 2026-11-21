@@ -44,6 +44,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Ventana extends JFrame implements IVista, Observador {
+    private final JTextField nombre = new JTextField(20);
+    private final JTextField contrasenia = new JTextField(20);
+    private JLabel mensajeErrorLogin;
+
     private final JComboBox<String> tipoNave = new JComboBox<>(NaveFactory.tipos_naves);
     private final JComboBox<String> origenCapitan = new JComboBox<>(TripulanteFactory.tipos_origen);
     private final JTextField nombreCapitan = new JTextField();
@@ -71,9 +75,92 @@ public class Ventana extends JFrame implements IVista, Observador {
     private JLabel[][] celdasTablero;
 
     public Ventana(ActionListener listenerFinalizar) {
-        super("Configuración de la nave");
+        super("Inicio de sesión");
         this.listenerFinalizar = listenerFinalizar;
-        SwingUtilities.invokeLater(this::construirInterfaz);
+        SwingUtilities.invokeLater(this::iniciarLogin);
+    }
+
+    @Override
+    public void iniciarLogin() {
+        SwingUtilities.invokeLater(() -> {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(760, 650));
+        setSize(850, 700);
+        setLocationRelativeTo(null);
+        setTitle("Inicio de sesión");
+
+        JPanel contenido = new JPanel(new GridBagLayout());
+        contenido.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+
+        JPanel formulario = new JPanel(new GridBagLayout());
+        formulario.setBorder(BorderFactory.createTitledBorder("Ingreso"));
+        GridBagConstraints c = restricciones();
+
+        agregarCampo(formulario, c, 0, "Nombre:", nombre);
+        agregarCampo(formulario, c, 1, "Contraseña:", contrasenia);
+
+        JPanel botones = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 8, 0));
+        JButton iniciarSesion = new JButton("Iniciar sesión");
+        iniciarSesion.setActionCommand("iniciar_secion");
+        iniciarSesion.addActionListener(listenerFinalizar);
+
+        JButton registrarse = new JButton("Registrarse");
+        registrarse.setActionCommand("registrarse");
+        registrarse.addActionListener(listenerFinalizar);
+
+        botones.add(iniciarSesion);
+        botones.add(registrarse);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        formulario.add(botones, c);
+
+        mensajeErrorLogin = new JLabel();
+        mensajeErrorLogin.setForeground(Color.RED);
+        mensajeErrorLogin.setHorizontalAlignment(SwingConstants.CENTER);
+        mensajeErrorLogin.setVisible(false);
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        formulario.add(mensajeErrorLogin, c);
+
+        GridBagConstraints principal = new GridBagConstraints();
+        principal.insets = new Insets(12, 12, 12, 12);
+        principal.fill = GridBagConstraints.HORIZONTAL;
+        principal.weightx = 1;
+        contenido.add(formulario, principal);
+
+        setContentPane(contenido);
+        revalidate();
+        repaint();
+        setVisible(true);
+        });
+    }
+
+    @Override
+    public String getNombre() {
+        return nombre.getText();
+    }
+
+    @Override
+    public String getContrasenia() {
+        return contrasenia.getText();
+    }
+
+    @Override
+    public void notificarErrorLogin(String mensaje) {
+        SwingUtilities.invokeLater(() -> {
+            if (mensajeErrorLogin != null) {
+                mensajeErrorLogin.setText(mensaje);
+                mensajeErrorLogin.setVisible(true);
+                revalidate();
+                repaint();
+            }
+        });
     }
 
     private void construirInterfaz() {
@@ -465,60 +552,60 @@ public class Ventana extends JFrame implements IVista, Observador {
 
         return panelGrilla;
 }
-@Override
-public void actualizar() {
-    if (this.asistenteActual != null) {
-        SwingUtilities.invokeLater(() -> {
-            refrescarGrilla(this.asistenteActual.getTablero());
-            etiquetaEstado.setText("Estado del motor Warp: "
-                    + MotorWarp.ESTADO_NOMBRE[this.asistenteActual.getEstadoMotorWarp()]);
-        });
+    @Override
+    public void actualizar() {
+        if (this.asistenteActual != null) {
+            SwingUtilities.invokeLater(() -> {
+                refrescarGrilla(this.asistenteActual.getTablero());
+                etiquetaEstado.setText("Estado del motor Warp: "
+                        + MotorWarp.ESTADO_NOMBRE[this.asistenteActual.getEstadoMotorWarp()]);
+            });
+        }
     }
-}
 
-private void refrescarGrilla(Tablero tablero) {
-    if (celdasTablero == null) return;
-    Posicion posNave = tablero.getPosicionNave();
-    Posicion posObjetivo = (this.asistenteActual != null)
-                ? this.asistenteActual.getObjetivoActual()
-                : null;
-    ElementoDelUniverso[][] matriz = tablero.verTablero();
+    private void refrescarGrilla(Tablero tablero) {
+        if (celdasTablero == null) return;
+        Posicion posNave = tablero.getPosicionNave();
+        Posicion posObjetivo = (this.asistenteActual != null)
+                    ? this.asistenteActual.getObjetivoActual()
+                    : null;
+        ElementoDelUniverso[][] matriz = tablero.verTablero();
 
-    for (int i = 0; i < celdasTablero.length; i++) {
-        for (int j = 0; j < celdasTablero[i].length; j++) {
-            JLabel celda = celdasTablero[i][j];
+        for (int i = 0; i < celdasTablero.length; i++) {
+            for (int j = 0; j < celdasTablero[i].length; j++) {
+                JLabel celda = celdasTablero[i][j];
 
-            if (posNave != null && posNave.getX() == i && posNave.getY() == j) {
-                celda.setBackground(new Color(30, 136, 229));
-                celda.setForeground(Color.WHITE);
-                celda.setText("NAVE");
-            } else if (posObjetivo != null && posObjetivo.getX() == i && posObjetivo.getY() == j) {
-                    celda.setBackground(new Color(255, 193, 7)); // Amarillo/Dorado: Objetivo
-                    celda.setForeground(Color.BLACK);
-                    celda.setText("OBJ");
-                }
-                else {
-                ElementoDelUniverso elem = matriz[i][j];
-                if (elem == null) {
-                    celda.setBackground(new Color(20, 24, 35));
-                    celda.setForeground(Color.GRAY);
-                    celda.setText("·");
-                } else if (elem instanceof Asteroide) {
-                    celda.setBackground(new Color(117, 117, 117));
+                if (posNave != null && posNave.getX() == i && posNave.getY() == j) {
+                    celda.setBackground(new Color(30, 136, 229));
                     celda.setForeground(Color.WHITE);
-                    celda.setText("AST");
-                } else if (elem instanceof EstacionDeCarga) {
-                    celda.setBackground(new Color(67, 160, 71));
-                    celda.setForeground(Color.WHITE);
-                    celda.setText("EST");
-                } else if (elem instanceof Nave) {
-                    Nave enemiga = (Nave) elem;
-                    celda.setBackground(enemiga.getDestruida() ? new Color(60, 40, 40) : new Color(229, 57, 53));
-                    celda.setForeground(Color.WHITE);
-                    celda.setText(enemiga.getDestruida() ? "X" : "ENE");
+                    celda.setText("NAVE");
+                } else if (posObjetivo != null && posObjetivo.getX() == i && posObjetivo.getY() == j) {
+                        celda.setBackground(new Color(255, 193, 7)); // Amarillo/Dorado: Objetivo
+                        celda.setForeground(Color.BLACK);
+                        celda.setText("OBJ");
+                    }
+                    else {
+                    ElementoDelUniverso elem = matriz[i][j];
+                    if (elem == null) {
+                        celda.setBackground(new Color(20, 24, 35));
+                        celda.setForeground(Color.GRAY);
+                        celda.setText("·");
+                    } else if (elem instanceof Asteroide) {
+                        celda.setBackground(new Color(117, 117, 117));
+                        celda.setForeground(Color.WHITE);
+                        celda.setText("AST");
+                    } else if (elem instanceof EstacionDeCarga) {
+                        celda.setBackground(new Color(67, 160, 71));
+                        celda.setForeground(Color.WHITE);
+                        celda.setText("EST");
+                    } else if (elem instanceof Nave) {
+                        Nave enemiga = (Nave) elem;
+                        celda.setBackground(enemiga.getDestruida() ? new Color(60, 40, 40) : new Color(229, 57, 53));
+                        celda.setForeground(Color.WHITE);
+                        celda.setText(enemiga.getDestruida() ? "X" : "ENE");
+                    }
                 }
             }
         }
     }
-}
 }
