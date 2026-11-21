@@ -1,9 +1,8 @@
 package modelo.nave;
 
 public class NaveCombate extends Nave {
-	
-	protected int combustibleMax = 80;
-	protected int energiaMax = 100;
+    protected int combustibleMax = 80;
+    protected int energiaMax = 100;
 
     public NaveCombate() {
         super(80, 100, 0);
@@ -11,25 +10,27 @@ public class NaveCombate extends Nave {
 
     @Override
     public String getTipo() {
-    	return "COMBATE";
+        return "COMBATE";
     }
 
     @Override
-    public void interactuar(Nave nave) {
+    public String interactuar(Nave nave) {
         if (getDestruida()) {
-            return; // los restos de una nave destruida no combaten
+            return "Evento: La nave esta destruida, ya no puede combatir :c"; // los restos de una nave destruida no combaten
         }
+        String evento = "Evento: Encuentro con nave del tipo " + nave.getTipo();
         boolean rta = gana(nave);
         if (rta) {
-        	System.out.println("Nave enemiga destruida");
-        } else
-        	if (nave.getTipo() == "COMBATE") {
-        		System.out.println("Pacto de paz");
-        	} else {
-        		System.out.println("Derrotado");
-        		destruir();
-        	}
+            evento += " - Resultado: Hemos perdido la batalla";
+        } else if ("COMBATE".equals(nave.getTipo())) {
+            evento += " - Resultado: Hemos decidido hacer un pacto de paz";
+        } else {
+            destruir();
+            evento += " - Resultado: Hemos ganado el combate";
+        }
+        return evento;
     }
+
     
     @Override
     public boolean gana(Nave obj) {

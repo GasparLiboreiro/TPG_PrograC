@@ -12,25 +12,26 @@ public class NaveCarguera extends Nave {
     }
 
     @Override
-    public void interactuar(Nave nave) {
+    public String interactuar(Nave nave) {
         if (getDestruida()) {
-            return; // los restos de una nave destruida no combaten
+            return "Evento: La nave esta destruida, ya no puede combatir :c"; // los restos de una nave destruida no combaten
         }
+        String evento = "Evento: Encuentro con nave del tipo " + nave.getTipo();
         boolean rta = gana(nave);
         if (rta) {
-        	System.out.println("Nave enemiga destruida");
-        } else
-        	if (nave.getTipo() == "CARGUERA") {
-        		System.out.println("Pacto de paz");
-        	} else {
-        		System.out.println("Derrotado");
-        		destruir();
-        	}
+            evento += " - Resultado: Hemos perdido la batalla";
+        } else if ("CARGUERA".equals(nave.getTipo())) {
+            evento += " - Resultado: Hemos decidido hacer un pacto de paz";
+        } else {
+            destruir();
+            evento += " - Resultado: Hemos ganado el combate";
+        }
+        return evento;
     }
-    
+
     @Override
     public boolean gana(Nave obj) {
-    	return obj.ganaCarguera();
+        return obj.ganaCarguera();
     }
     @Override
     public boolean ganaCarguera() {
