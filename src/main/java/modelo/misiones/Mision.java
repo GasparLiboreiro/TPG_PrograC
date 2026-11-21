@@ -77,21 +77,22 @@ public abstract class Mision {
         Destino destino = Destino.getInstancia(asistente.getTablero());
         Nave nave = asistente.getNave();
         int indiceCamino = 0;                        // posición actual de la nave dentro de camino
-        ElementoDelUniverso ultimoElemento = null;   // evita interactuar dos veces con el mismo elemento mientras la nave espera
 
+        //CONSUMO DE RECURSOS DE LA MISION
         nave.consumirCombustible(getCostoCombustible());
         nave.consumirEnergia(getCostoEnergia());
         nave.aumentarDesgaste(getCostoDesgaste());
         bitacora.registrar("Consumo aplicado: -" + getCostoCombustible() + " comb, -" +
                 getCostoEnergia() + " energ, +" + getCostoDesgaste() + " desgaste.");
 
+
+
         while (!nave.getDestruida() && !asistente.getPosicion().equals(objetivo)) {
             // A. Turno de la nave
             // 1. Inspección de la posición actual
             ElementoDelUniverso elemento = asistente.analizarPosicion();
-            if (elemento != null && elemento != ultimoElemento) {
-                elemento.interactuar(nave);
-                ultimoElemento = elemento;
+            if (elemento != null) {
+                bitacora.registrar(elemento.interactuar(nave));
             }
             if (nave.getDestruida()) {
                 break;
@@ -100,9 +101,11 @@ public abstract class Mision {
             // 2. Escaneo con el radar de corto alcance
             boolean hayObstaculo = asistente.usarRCD(asistente.getPosicion(), camino);
             if (hayObstaculo) {
-                bitacora.registrar("Obstáculo detectado. Motor Warp ["
+                bitacora.registrar("Obstáculo detectado. Estado del motor: Motor Warp ["
                 + MotorWarp.ESTADO_NOMBRE[asistente.getEstadoMotorWarp()] + "].");
-            }   
+            }
+
+
             // 3. Planificación y movimiento: el estado del motor decide cuántas casillas avanza
             int casillas = asistente.ordenarSalto(hayObstaculo);
             if (casillas == 2) {
@@ -111,8 +114,8 @@ public abstract class Mision {
             if (casillas > 0) {
                 indiceCamino = Math.min(indiceCamino + casillas, camino.size() - 1);
                 asistente.moverNave(camino.get(indiceCamino));
-                ultimoElemento = null;
             }
+
 
             // B. Turno del tablero
             destino.turnoDestino();

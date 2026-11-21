@@ -189,7 +189,7 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
     }
 
     @Override
-    public abstract void interactuar(Nave nave);
+    public abstract String interactuar(Nave nave);
     @Override
     public boolean esObstaculo() {
         return true;
