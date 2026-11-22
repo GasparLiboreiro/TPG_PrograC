@@ -207,7 +207,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         contenido.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         contenido.add(crearPanelSuperior(), BorderLayout.NORTH);
         contenido.add(crearPanelTripulacion(), BorderLayout.CENTER);
-        contenido.add(crearBotonFinalizar(), BorderLayout.SOUTH);
+        contenido.add(crearPanelInferior(), BorderLayout.SOUTH);
         setContentPane(contenido);
     }
 
