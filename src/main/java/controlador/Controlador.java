@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class Controlador implements ActionListener {
     private IVista vista;
     private Sistema sistema;
+    private ControladorConcurrencia controladorConcurrencia;
 
     public Controlador(DAOUsuarios dao) {
         this.vista = null;
@@ -98,6 +99,11 @@ public class Controlador implements ActionListener {
         } else if (e.getActionCommand().equals("reiniciar")) {
             this.sistema.setAsistente(null);
             this.vista.iniciarConfiguracionNave();
+        }
+        else if (e.getActionCommand().equals("Concurrencia")) {
+            this.controladorConcurrencia = new ControladorConcurrencia();
+            this.controladorConcurrencia.iniciarFlujoCapacidad();
+
         }
     }
 
