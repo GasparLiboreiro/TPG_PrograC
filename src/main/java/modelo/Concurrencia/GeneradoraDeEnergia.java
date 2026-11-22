@@ -1,7 +1,7 @@
 package modelo.Concurrencia;
 
 public class GeneradoraDeEnergia implements Runnable {
-    private static final long TIEMPO_PRODUCCION_MS = 18000L;
+    private static final long TIEMPO_PRODUCCION_MS = 6000L;
 
     private final String nombre;
     private final PlataformaDeCarga plataforma;

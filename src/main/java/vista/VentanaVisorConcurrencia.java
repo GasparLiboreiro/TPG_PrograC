@@ -27,7 +27,7 @@ public class VentanaVisorConcurrencia extends JFrame implements IVistaConcurrenc
     private AccionEntidadListener listener;
 
     public VentanaVisorConcurrencia(int capacidadPlataforma, AccionEntidadListener listener) {
-        super("Simulación Concurrente - Capacidad: " + capacidadPlataforma);
+        super("SimulaciÃ³n Concurrente - Capacidad: " + capacidadPlataforma);
         this.listener = listener;
         construirInterfaz(capacidadPlataforma);
     }
@@ -95,7 +95,7 @@ public class VentanaVisorConcurrencia extends JFrame implements IVistaConcurrenc
 
     private JPanel crearPanelConsola() {
         JPanel panel = new JPanel(new BorderLayout(6, 6));
-        panel.setBorder(BorderFactory.createTitledBorder("Eventos de la simulación"));
+        panel.setBorder(BorderFactory.createTitledBorder("Eventos de la simulaciÃ³n"));
 
         areaConsola.setEditable(false);
         areaConsola.setLineWrap(true);

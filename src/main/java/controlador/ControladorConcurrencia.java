@@ -78,7 +78,7 @@ public class ControladorConcurrencia {
         this.hilos.add(hilo);
         hilo.start();
         if (this.visor != null) {
-            this.visor.agregarLineaLog("Se agregó la generadora " + nombre + ".");
+            this.visor.agregarLineaLog("Se agregÃ³ la generadora " + nombre + ".");
         }
     }
 
@@ -92,7 +92,7 @@ public class ControladorConcurrencia {
         this.hilos.add(hilo);
         hilo.start();
         if (this.visor != null) {
-            this.visor.agregarLineaLog("Se agregó la nave " + nombre + ".");
+            this.visor.agregarLineaLog("Se agregÃ³ la nave " + nombre + ".");
         }
     }
 

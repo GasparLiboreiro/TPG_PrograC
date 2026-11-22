@@ -1,7 +1,7 @@
 package modelo.Concurrencia;
 
 public class NaveConsumidora implements Runnable {
-    private static final long TIEMPO_CONSUMO_MS = 10000L;
+    private static final long TIEMPO_CONSUMO_MS = 4000L;
     
     private PlataformaDeCarga plataforma;
     private String nombre;
