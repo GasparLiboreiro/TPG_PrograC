@@ -45,12 +45,17 @@ public class InformeMision {
     }
     @Override
     public String toString() {
-        return "=== INFORME DE MISIÓN [" + codigoMision + "] ===\n" +
+        String ret = "=== INFORME DE MISIÓN [" + codigoMision + "] ===\n" +
                 "Resultado: " + estadoFinal + "\n" +
                 "Detalle: " + cartelResultado + "\n" +
                 "Recursos finales -> Combustible: " + combustibleRestante +
                 " | Energía: " + energiaRestante +
                 " | Desgaste: " + desgasteFinal + "\n" +
-                "Acontecimientos: " + bitacora.getEntradas();
+                "Acontecimientos: \n";
+        for(String entrada : bitacora.getEntradas())
+        {
+            ret += "> "+entrada+"\n";
+        }
+        return ret;
     }
 }

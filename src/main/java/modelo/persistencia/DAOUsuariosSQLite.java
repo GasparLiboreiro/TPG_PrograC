@@ -43,6 +43,7 @@ public class DAOUsuariosSQLite implements DAOUsuarios {
         }
     }
 
+    @Override
     public boolean usuarioCumpleFormatoMinimo(DTOUsuario usuario) {
         return usuario!=null && usuario.getNombre()!=null && usuario.getNombre().length()>=1 && usuario.getNombre().length()<=50 && usuario.getContrasenia()!=null && usuario.getContrasenia().length()>=1 && usuario.getContrasenia().length()<=50;
     }

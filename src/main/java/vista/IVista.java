@@ -21,4 +21,9 @@ public interface IVista{
     String getContrasenia();
     void iniciarLogin();
     void notificarErrorLogin(String mensaje);
+    void setTiposNaves(String[] tiposNaves);
+    void setTiposOrigen(String[] tiposOrigen);
+    void setTiposOficio(String[] tiposOficio);
+    void setTiposMisiones(String[] tiposMisiones);
+    void setEstadosMotorWarp(String[] estadosMotorWarp);
 }

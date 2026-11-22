@@ -1,8 +1,10 @@
 package controlador;
 
 import modelo.Asistente;
+import modelo.MotorWarp;
 import modelo.Sistema;
 import modelo.persistencia.DAOUsuarios;
+import modelo.persistencia.DTOUsuario;
 import modelo.tripulantes.TripulanteFactory;
 import modelo.nave.Nave;
 import modelo.nave.NaveFactory;
@@ -30,32 +32,36 @@ public class Controlador implements ActionListener {
 
     public void setVista(IVista vista) {
         this.vista = vista;
+        this.vista.setTiposNaves(NaveFactory.tipos_naves);
+        this.vista.setTiposOficio(TripulanteFactory.tipos_oficio);
+        this.vista.setTiposOrigen(TripulanteFactory.tipos_origen);
+        this.vista.setTiposMisiones(MisionFactory.tipos_misiones);
+        this.vista.setEstadosMotorWarp(MotorWarp.ESTADO_NOMBRE);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals("iniciar_secion"))
         {
-            System.out.println("LogIn "+vista.getNombre()+" "+vista.getContrasenia());
-            if(vista.getNombre()==null || vista.getNombre().length()==0 || vista.getNombre().length()>50)
-                vista.notificarErrorLogin("Longitud de nombre invalida, debe tener entre 1 y 50 caracteres");
-            else if(vista.getContrasenia()==null || vista.getContrasenia().length()==0 || vista.getContrasenia().length()>50)
-                vista.notificarErrorLogin("Longitud de contrasenia invalida, debe tener entre 1 y 50 caracteres");
-            else if(sistema.iniciar_secion(vista.getNombre(), vista.getContrasenia()))
-                vista.iniciarConfiguracionNave();
-            else
+            DTOUsuario usuario = new DTOUsuario(vista.getNombre(), vista.getContrasenia());
+
+            if(!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario))
+                vista.notificarErrorLogin("Nombre y/o Contraseña vacia o de longitud mayor a 50");
+            else if(!sistema.iniciar_secion(usuario))
                 vista.notificarErrorLogin("Datos de inicio de secion invalidos");
+            else
+                vista.iniciarConfiguracionNave();
         }
         else if(e.getActionCommand().equals("registrarse"))
         {
-            if(vista.getNombre()==null || vista.getNombre().length()==0 || vista.getNombre().length()>50)
-                vista.notificarErrorLogin("Longitud de nombre invalida, debe tener entre 1 y 50 caracteres");
-            else if(vista.getContrasenia()==null || vista.getContrasenia().length()==0 || vista.getContrasenia().length()>50)
-                vista.notificarErrorLogin("Longitud de contrasenia invalida, debe tener entre 1 y 50 caracteres");
-            else if(sistema.registrar_usuario(vista.getNombre(), vista.getContrasenia()))
-                vista.iniciarConfiguracionNave();
-            else
+            DTOUsuario usuario = new DTOUsuario(vista.getNombre(), vista.getContrasenia());
+
+            if(!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario))
+                vista.notificarErrorLogin("Nombre y/o Contraseña vacia o de longitud mayor a 50");
+            else if(!sistema.registrar_usuario(usuario))
                 vista.notificarErrorLogin("Registro insatisfactorio, ya hay un usuario con el nombre ingresado");
+            else
+                vista.iniciarConfiguracionNave();
         }
         else if(e.getActionCommand().equals("inicializar")) {
             try {
@@ -99,7 +105,7 @@ public class Controlador implements ActionListener {
         String tipoMision = vista.getTipoMision();
         vista.setControlesMisionHabilitados(false);
 
-        // Lanzamos la misión en un hilo separado para no congelar la interfaz Swing
+        // Lanzamos la misión en un hilo separado para no congelar la interfaz
         new Thread(() -> {
             try {
                 Mision mision = MisionFactory.crearMision(tipoMision, sistema.getAsistente());
@@ -110,6 +116,7 @@ public class Controlador implements ActionListener {
                     vista.setControlesMisionHabilitados(true);
                 }
             } catch (Exception ex) {
+                System.out.println("throws");
                 vista.mostrarError(ex.getMessage());
                 if (!sistema.getAsistente().getNave().getDestruida()) {
                     vista.setControlesMisionHabilitados(true);

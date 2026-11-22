@@ -16,4 +16,11 @@ public interface DAOUsuarios {
      * @return false -> si el nombre ya esta en uso</br>true -> si se consiguio registrar al usuario satisfactoriamente
      */
     public boolean register(DTOUsuario usuario);
+
+    /**
+     * Valida que el DTOUsuario tenga el formato adecuado
+     * @param usuario DTO con la informacion del usuario
+     * @return false -> si el usuario es null, si sus atributos son null, o si sus atributos miden menos de 1 o mas de 50 caracteres  true -> si no
+     */
+    public boolean usuarioCumpleFormatoMinimo(DTOUsuario usuario);
 }
