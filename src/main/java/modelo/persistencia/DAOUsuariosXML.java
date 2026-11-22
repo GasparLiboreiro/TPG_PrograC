@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class DAOUsuariosXML implements DAOUsuarios {
-    protected static final String NOMBRE_ARCHIVO_XML = "usersdb.xml";
+    protected static final String NOMBRE_ARCHIVO_XML = "usuarios.xml";
 
     private ArrayList<DTOUsuario> getUsuarios() {
         XMLDecoder decoder = null;
@@ -61,5 +61,10 @@ public class DAOUsuariosXML implements DAOUsuarios {
         encoder.writeObject(usuarios);
         encoder.close();
         return true;
+    }
+
+    @Override
+    public boolean usuarioCumpleFormatoMinimo(DTOUsuario usuario) {
+        return usuario!=null && usuario.getNombre()!=null && usuario.getNombre().length()>=1 && usuario.getNombre().length()<=50 && usuario.getContrasenia()!=null && usuario.getContrasenia().length()>=1 && usuario.getContrasenia().length()<=50;
     }
 }

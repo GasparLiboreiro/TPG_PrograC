@@ -3,12 +3,7 @@ package vista;
 import modelo.Asistente;
 import modelo.ElementoDelUniverso;
 import modelo.nave.Nave;
-import modelo.nave.NaveFactory;
-import modelo.tripulantes.TripulanteFactory;
-
-import modelo.misiones.MisionFactory;
 import modelo.misiones.InformeMision;
-import modelo.MotorWarp;
 import modelo.Elementos.Asteroide;
 import modelo.Elementos.EstacionDeCarga;
 import modelo.destinoytablero.Observador;
@@ -48,14 +43,20 @@ public class Ventana extends JFrame implements IVista, Observador {
     private final JTextField contrasenia = new JTextField(20);
     private JLabel mensajeErrorLogin;
 
-    private final JComboBox<String> tipoNave = new JComboBox<>(NaveFactory.tipos_naves);
-    private final JComboBox<String> origenCapitan = new JComboBox<>(TripulanteFactory.tipos_origen);
+    private String[] tiposNaves;
+    private String[] tiposOrigen;
+    private String[] tiposOficio;
+    private String[] tiposMisiones;
+    private String[] estadosMotorWarp;
+
+    private final JComboBox<String> tipoNave = new JComboBox<>();
+    private final JComboBox<String> origenCapitan = new JComboBox<>();
     private final JTextField nombreCapitan = new JTextField();
     private final JTextField identidadCapitan = new JTextField();
     private final JTextField antiguedadCapitan = new JTextField();
 
-    private final JComboBox<String> oficioTripulante = new JComboBox<>(TripulanteFactory.tipos_oficio);
-    private final JComboBox<String> origenTripulante = new JComboBox<>(TripulanteFactory.tipos_origen);
+    private final JComboBox<String> oficioTripulante = new JComboBox<>();
+    private final JComboBox<String> origenTripulante = new JComboBox<>();
     private final JTextField nombreTripulante = new JTextField();
     private final JTextField identidadTripulante = new JTextField();
     private final JTextField antiguedadTripulante = new JTextField();
@@ -65,7 +66,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     private final JList<String> listaTripulantes = new JList<>();
     private final ActionListener listenerFinalizar;
 
-    private final JComboBox<String> selectorMision = new JComboBox<>(MisionFactory.tipos_misiones);
+    private final JComboBox<String> selectorMision = new JComboBox<>();
     private final JButton botonEjecutarMision = new JButton("Ejecutar misión");
     private final JButton botonReiniciar = new JButton("Configurar nueva nave");
     private final JTextArea areaResumen = new JTextArea();
@@ -78,6 +79,35 @@ public class Ventana extends JFrame implements IVista, Observador {
         super("Inicio de sesión");
         this.listenerFinalizar = listenerFinalizar;
         SwingUtilities.invokeLater(this::iniciarLogin);
+    }
+
+    @Override
+    public void setTiposNaves(String[] tiposNaves) {
+        this.tiposNaves = copiarArray(tiposNaves);
+    }
+
+    @Override
+    public void setTiposOrigen(String[] tiposOrigen) {
+        this.tiposOrigen = copiarArray(tiposOrigen);
+    }
+
+    @Override
+    public void setTiposOficio(String[] tiposOficio) {
+        this.tiposOficio = copiarArray(tiposOficio);
+    }
+
+    @Override
+    public void setTiposMisiones(String[] tiposMisiones) {
+        this.tiposMisiones = copiarArray(tiposMisiones);
+    }
+
+    @Override
+    public void setEstadosMotorWarp(String[] estadosMotorWarp) {
+        this.estadosMotorWarp = copiarArray(estadosMotorWarp);
+    }
+
+    private String[] copiarArray(String[] valores) {
+        return valores == null ? new String[0] : valores.clone();
     }
 
     @Override
@@ -168,6 +198,10 @@ public class Ventana extends JFrame implements IVista, Observador {
         setMinimumSize(new Dimension(760, 650));
         setSize(850, 700);
         setLocationRelativeTo(null);
+        configurarCombo(tipoNave, tiposNaves);
+        configurarCombo(origenCapitan, tiposOrigen);
+        configurarCombo(oficioTripulante, tiposOficio);
+        configurarCombo(origenTripulante, tiposOrigen);
 
         JPanel contenido = new JPanel(new BorderLayout(12, 12));
         contenido.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
@@ -175,6 +209,24 @@ public class Ventana extends JFrame implements IVista, Observador {
         contenido.add(crearPanelTripulacion(), BorderLayout.CENTER);
         contenido.add(crearBotonFinalizar(), BorderLayout.SOUTH);
         setContentPane(contenido);
+    }
+
+    private void configurarCombo(JComboBox<String> combo, String[] opciones) {
+        combo.removeAllItems();
+        if (opciones != null) {
+            for (String opcion : opciones) {
+                combo.addItem(opcion);
+            }
+        }
+    }
+
+    private String getNombreEstadoMotorWarp(int estado) {
+        if (estadosMotorWarp != null
+                && estado >= 0
+                && estado < estadosMotorWarp.length) {
+            return estadosMotorWarp[estado];
+        }
+        return "";
     }
 
     private JPanel crearPanelSuperior() {
@@ -391,6 +443,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     public void iniciarJuego(Asistente asistente) {
         this.asistenteActual = asistente;
         setTitle("Programa en ejecución");
+        configurarCombo(selectorMision, tiposMisiones);
         setContentPane(crearPanelJuego(asistente));
         revalidate();
         repaint();
@@ -439,7 +492,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         panelControles.add(panelBotonesMision, BorderLayout.EAST);
 
         etiquetaEstado.setText("Estado del motor Warp: "
-                + MotorWarp.ESTADO_NOMBRE[asistente.getEstadoMotorWarp()]);
+                + getNombreEstadoMotorWarp(asistente.getEstadoMotorWarp()));
 
         panelInferior.add(panelControles, BorderLayout.NORTH);
         panelInferior.add(etiquetaEstado, BorderLayout.SOUTH);
@@ -504,7 +557,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         SwingUtilities.invokeLater(() ->
             JOptionPane.showMessageDialog(this, mensaje, "Datos inválidos",
             JOptionPane.ERROR_MESSAGE));
-    }   
+    }
     @Override
     public String getTipoMision() {
         return (String) selectorMision.getSelectedItem();
@@ -515,7 +568,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         SwingUtilities.invokeLater(() -> {
             areaResumen.setText(crearResumenJuego(this.asistenteActual, informe));
             etiquetaEstado.setText("Estado del motor Warp: "
-                + MotorWarp.ESTADO_NOMBRE[this.asistenteActual.getEstadoMotorWarp()]);
+                + getNombreEstadoMotorWarp(this.asistenteActual.getEstadoMotorWarp()));
     });
     }
 
@@ -551,14 +604,15 @@ public class Ventana extends JFrame implements IVista, Observador {
         refrescarGrilla(tablero);
 
         return panelGrilla;
-}
+    }
+
     @Override
-    public void actualizar() {
+    public void actualizar() { // actualizar tablero
         if (this.asistenteActual != null) {
             SwingUtilities.invokeLater(() -> {
                 refrescarGrilla(this.asistenteActual.getTablero());
                 etiquetaEstado.setText("Estado del motor Warp: "
-                        + MotorWarp.ESTADO_NOMBRE[this.asistenteActual.getEstadoMotorWarp()]);
+                        + getNombreEstadoMotorWarp(this.asistenteActual.getEstadoMotorWarp()));
             });
         }
     }

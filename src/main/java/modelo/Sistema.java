@@ -24,14 +24,13 @@ public class Sistema {
 
     /**
      * Intenta iniciar secion con el nombre y contraseña proveidos
-     * <b>Pre:</b> nombre y apellido deben ser no nulos de longitud mayor a 0 y menor o igual a 50
-     * @param nombre nombre de la cuenta
-     * @param contrasenia contrasenia de la cuenta
+     * <b>Pre:</b> usuario debe ser no nulo y sus campos deben ser no nulos de longitud mayor a 0 y menor o igual a 50
+     * @param usuario nombre de la cuenta
      * @return true si se inicio secion satisfactoriamente false si no
      */
-    public boolean iniciar_secion(String nombre, String contrasenia) {
-        if(sistemaUsuarios.login(new DTOUsuario(nombre, contrasenia))){
-            this.nombre_usuario = new String(nombre);
+    public boolean iniciar_secion(DTOUsuario usuario) {
+        if(sistemaUsuarios.login(usuario)){
+            this.nombre_usuario = new String(usuario.getNombre());
             return true;
         }
         else
@@ -40,18 +39,27 @@ public class Sistema {
 
     /**
      * Intenta registrar un nuevo usuario con el nombre y contraseña proveidos, si se pudo, tambien inicia secion con la cuenta creada
-     * <b>Pre:</b> nombre y apellido deben ser no nulos de longitud mayor a 0 y menor o igual a 50
-     * @param nombre nombre de la cuenta a crear
-     * @param contrasenia contrasenia de la cuenta a crear
+     * <b>Pre:</b> usuario debe ser no nulo y sus campos deben ser no nulos de longitud mayor a 0 y menor o igual a 50
+     * @param usuario nombre de la cuenta
      * @return true si se creo la cuenta satisfactoriamente y se inicio secion false si no
      */
-    public boolean registrar_usuario(String nombre, String contrasenia) {
-        if(sistemaUsuarios.register(new DTOUsuario(nombre, contrasenia))){
-            this.nombre_usuario = new String(nombre);
+    public boolean registrar_usuario(DTOUsuario usuario) {
+        if(sistemaUsuarios.register(usuario)){
+            this.nombre_usuario = new String(usuario.getNombre());
             return true;
         }
         else
             return false;
+    }
+
+    /**
+     * Valida que el DTOUsuario tenga el formato adecuado
+     * @param usuario DTO con la informacion del usuario
+     * @return false -> si el usuario es null, si sus atributos son null, o si sus atributos miden menos de 1 o mas de 50 caracteres  true -> si no
+     */
+    public boolean dtoUsuarioCumpleFormatoMinimo(DTOUsuario usuario)
+    {
+        return this.sistemaUsuarios.usuarioCumpleFormatoMinimo(usuario);
     }
 
     /**
@@ -71,4 +79,9 @@ public class Sistema {
         assert nombre_usuario != null : "se llamo a getAsistente de Sistema sin haber iniciado secion";
         return this.asistente;
     }
+
+    /**
+     * falta implementar:
+     * getTablero
+     */
 }
