@@ -1,0 +1,61 @@
+package modelo.misiones;
+
+import modelo.Bitacora;
+import modelo.nave.Nave;
+
+public class InformeMision {
+    private final String codigoMision;
+    private final String estadoFinal;
+    private final String cartelResultado;
+    private final int combustibleRestante;
+    private final int energiaRestante;
+    private final int desgasteFinal;
+    private final Bitacora bitacora;
+
+    public InformeMision(Mision mision, Nave nave) {
+        this.codigoMision = mision.getCodigo();
+        this.estadoFinal = mision.isExitosa() ? "ÉXITO" : "FALLO";
+        this.cartelResultado = mision.getCartelResultado();
+        this.combustibleRestante = nave.getCombustible();
+        this.energiaRestante = nave.getEnergia();
+        this.desgasteFinal = nave.getDesgaste();
+        this.bitacora = mision.getBitacora();
+    }
+
+    public String getCodigoMision() { return
+            codigoMision;
+    }
+    public String getEstadoFinal() {
+        return estadoFinal;
+    }
+    public String getCartelResultado() {
+        return cartelResultado;
+    }
+    public int getCombustibleRestante() {
+        return combustibleRestante;
+    }
+    public int getEnergiaRestante() {
+        return energiaRestante;
+    }
+    public int getDesgasteFinal() {
+        return desgasteFinal;
+    }
+    public Bitacora getBitacora() {
+        return bitacora;
+    }
+    @Override
+    public String toString() {
+        String ret = "=== INFORME DE MISIÓN [" + codigoMision + "] ===\n" +
+                "Resultado: " + estadoFinal + "\n" +
+                "Detalle: " + cartelResultado + "\n" +
+                "Recursos finales -> Combustible: " + combustibleRestante +
+                " | Energía: " + energiaRestante +
+                " | Desgaste: " + desgasteFinal + "\n" +
+                "Acontecimientos: \n";
+        for(String entrada : bitacora.getEntradas())
+        {
+            ret += "> "+entrada+"\n";
+        }
+        return ret;
+    }
+}
