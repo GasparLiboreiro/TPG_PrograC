@@ -299,7 +299,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         finalizar.addActionListener(evento -> finalizarConfiguracion());
         return finalizar;
     }
-    
+
     private JPanel crearPanelInferior() {
             JPanel panelInferior = new JPanel(new GridBagLayout());
             GridBagConstraints c = new GridBagConstraints();
@@ -323,6 +323,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         concurrencia.addActionListener(this.listenerFinalizar);
         return concurrencia;
     }
+
 
 
     private GridBagConstraints restricciones() {
@@ -546,7 +547,7 @@ public class Ventana extends JFrame implements IVista, Observador {
             sb.append("\n").append(ultimoInforme.toString()).append("\n");
         }
 
-        sb.append("\n=== BITÃ?CORA GENERAL ===\n");
+        sb.append("\n=== BITÃCORA GENERAL ===\n");
         for (String entrada : asistente.getBitacoraGeneral().getEntradas()) {
             sb.append("> ").append(entrada).append("\n");
         }
