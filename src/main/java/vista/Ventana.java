@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -26,7 +27,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -39,9 +42,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Ventana extends JFrame implements IVista, Observador {
+    private static final String VISTA_LOGIN = "LOGIN";
+    private static final String VISTA_REGISTRO = "REGISTER";
+
+    private final CardLayout authCardLayout = new CardLayout();
+    private final JPanel authCardsPanel = new JPanel(authCardLayout);
+
+    // Campos de Login
     private final JTextField nombre = new JTextField(20);
-    private final JTextField contrasenia = new JTextField(20);
+    private final JPasswordField contrasenia = new JPasswordField(20);
     private JLabel mensajeErrorLogin;
+
+    // Campos de Registro
+    private final JTextField nombreRegistro = new JTextField(20);
+    private final JPasswordField contraseniaRegistro = new JPasswordField(20);
+    private JLabel mensajeErrorRegistro;
+    private boolean modoRegistroActivo = false;
 
     private String[] tiposNaves;
     private String[] tiposOrigen;
@@ -110,15 +126,69 @@ public class Ventana extends JFrame implements IVista, Observador {
         return valores == null ? new String[0] : valores.clone();
     }
 
+    private void asegurarPanelesAuth() {
+        if (authCardsPanel.getComponentCount() == 0) {
+            authCardsPanel.add(crearPanelLogin(), VISTA_LOGIN);
+            authCardsPanel.add(crearPanelRegistro(), VISTA_REGISTRO);
+        }
+    }
+
     @Override
     public void iniciarLogin() {
         SwingUtilities.invokeLater(() -> {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(760, 650));
-        setSize(850, 700);
-        setLocationRelativeTo(null);
-        setTitle("Inicio de sesión");
+            modoRegistroActivo = false;
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setMinimumSize(new Dimension(760, 650));
+            setSize(850, 700);
+            setLocationRelativeTo(null);
+            setTitle("Inicio de sesión");
 
+            asegurarPanelesAuth();
+            if (mensajeErrorLogin != null) {
+                mensajeErrorLogin.setForeground(Color.RED);
+                mensajeErrorLogin.setText("");
+                mensajeErrorLogin.setVisible(false);
+            }
+            if (mensajeErrorRegistro != null) {
+                mensajeErrorRegistro.setText("");
+                mensajeErrorRegistro.setVisible(false);
+            }
+
+            authCardLayout.show(authCardsPanel, VISTA_LOGIN);
+            setContentPane(authCardsPanel);
+            revalidate();
+            repaint();
+            setVisible(true);
+            nombre.requestFocusInWindow();
+        });
+    }
+
+    public void mostrarVistaRegistro() {
+        SwingUtilities.invokeLater(() -> {
+            modoRegistroActivo = true;
+            setTitle("Registro de usuario");
+            asegurarPanelesAuth();
+            nombreRegistro.setText("");
+            contraseniaRegistro.setText("");
+            if (mensajeErrorRegistro != null) {
+                mensajeErrorRegistro.setForeground(Color.RED);
+                mensajeErrorRegistro.setText("");
+                mensajeErrorRegistro.setVisible(false);
+            }
+            authCardLayout.show(authCardsPanel, VISTA_REGISTRO);
+            setContentPane(authCardsPanel);
+            revalidate();
+            repaint();
+            setVisible(true);
+            nombreRegistro.requestFocusInWindow();
+        });
+    }
+
+    public boolean isModoRegistroActivo() {
+        return modoRegistroActivo;
+    }
+
+    private JPanel crearPanelLogin() {
         JPanel contenido = new JPanel(new GridBagLayout());
         contenido.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
@@ -129,14 +199,20 @@ public class Ventana extends JFrame implements IVista, Observador {
         agregarCampo(formulario, c, 0, "Nombre:", nombre);
         agregarCampo(formulario, c, 1, "Contraseña:", contrasenia);
 
-        JPanel botones = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 8, 0));
+        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         JButton iniciarSesion = new JButton("Iniciar sesión");
         iniciarSesion.setActionCommand("iniciar_secion");
         iniciarSesion.addActionListener(listenerFinalizar);
 
         JButton registrarse = new JButton("Registrarse");
-        registrarse.setActionCommand("registrarse");
-        registrarse.addActionListener(listenerFinalizar);
+        registrarse.setActionCommand("ir_registro");
+        registrarse.addActionListener(e -> {
+            mostrarVistaRegistro();
+            if (listenerFinalizar != null) {
+                listenerFinalizar.actionPerformed(
+                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ir_registro"));
+            }
+        });
 
         botones.add(iniciarSesion);
         botones.add(registrarse);
@@ -164,36 +240,89 @@ public class Ventana extends JFrame implements IVista, Observador {
         principal.weightx = 1;
         contenido.add(formulario, principal);
 
-        setContentPane(contenido);
-        revalidate();
-        repaint();
-        setVisible(true);
-        });
+        return contenido;
+    }
+
+    private JPanel crearPanelRegistro() {
+        JPanel contenido = new JPanel(new GridBagLayout());
+        contenido.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+
+        JPanel formulario = new JPanel(new GridBagLayout());
+        formulario.setBorder(BorderFactory.createTitledBorder("Crear usuario"));
+        GridBagConstraints c = restricciones();
+
+        agregarCampo(formulario, c, 0, "Nombre:", nombreRegistro);
+        agregarCampo(formulario, c, 1, "Contraseña:", contraseniaRegistro);
+
+        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
+        JButton crearUsuario = new JButton("Crear usuario");
+        crearUsuario.setActionCommand("registrarse");
+        crearUsuario.addActionListener(listenerFinalizar);
+
+        JButton volver = new JButton("Volver");
+        volver.setActionCommand("volver_login");
+        volver.addActionListener(e -> iniciarLogin());
+
+        botones.add(crearUsuario);
+        botones.add(volver);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        formulario.add(botones, c);
+
+        mensajeErrorRegistro = new JLabel();
+        mensajeErrorRegistro.setForeground(Color.RED);
+        mensajeErrorRegistro.setHorizontalAlignment(SwingConstants.CENTER);
+        mensajeErrorRegistro.setVisible(false);
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        formulario.add(mensajeErrorRegistro, c);
+
+        GridBagConstraints principal = new GridBagConstraints();
+        principal.insets = new Insets(12, 12, 12, 12);
+        principal.fill = GridBagConstraints.HORIZONTAL;
+        principal.weightx = 1;
+        contenido.add(formulario, principal);
+
+        return contenido;
     }
 
     @Override
     public String getNombre() {
-        return nombre.getText();
+        return modoRegistroActivo ? nombreRegistro.getText() : nombre.getText();
     }
 
     @Override
     public String getContrasenia() {
-        return contrasenia.getText();
+        return modoRegistroActivo
+                ? new String(contraseniaRegistro.getPassword())
+                : new String(contrasenia.getPassword());
     }
 
     @Override
     public void notificarErrorLogin(String mensaje) {
         SwingUtilities.invokeLater(() -> {
-            if (mensajeErrorLogin != null) {
+            if (modoRegistroActivo && mensajeErrorRegistro != null) {
+                mensajeErrorRegistro.setForeground(Color.RED);
+                mensajeErrorRegistro.setText(mensaje);
+                mensajeErrorRegistro.setVisible(true);
+            } else if (mensajeErrorLogin != null) {
+                mensajeErrorLogin.setForeground(Color.RED);
                 mensajeErrorLogin.setText(mensaje);
                 mensajeErrorLogin.setVisible(true);
-                revalidate();
-                repaint();
             }
+            revalidate();
+            repaint();
         });
     }
 
     private void construirInterfaz() {
+        modoRegistroActivo = false;
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(760, 650));
         setSize(850, 700);
@@ -420,22 +549,23 @@ public class Ventana extends JFrame implements IVista, Observador {
     @Override
     public void iniciarConfiguracionNave() {
         SwingUtilities.invokeLater(() -> {
-        if (this.asistenteActual != null) {
-            this.asistenteActual.getTablero().quitarObservador(this);
-        }
-        this.asistenteActual = null;
-        this.tripulantes.clear();
-        actualizarListaTripulantes();
-        nombreCapitan.setText("");
-        identidadCapitan.setText("");
-        antiguedadCapitan.setText("");
-        limpiarCamposTripulante();
-        setControlesMisionHabilitados(true);
-        setTitle("Configuración de la nave");
-        construirInterfaz();
-        revalidate();
-        repaint();
-        this.setVisible(true);
+            modoRegistroActivo = false;
+            if (this.asistenteActual != null) {
+                this.asistenteActual.getTablero().quitarObservador(this);
+            }
+            this.asistenteActual = null;
+            this.tripulantes.clear();
+            actualizarListaTripulantes();
+            nombreCapitan.setText("");
+            identidadCapitan.setText("");
+            antiguedadCapitan.setText("");
+            limpiarCamposTripulante();
+            setControlesMisionHabilitados(true);
+            setTitle("Configuración de la nave");
+            construirInterfaz();
+            revalidate();
+            repaint();
+            this.setVisible(true);
         });
     }
 
@@ -457,7 +587,6 @@ public class Ventana extends JFrame implements IVista, Observador {
         titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 18f));
         panel.add(titulo, BorderLayout.NORTH);
 
-        // Panel central: Grilla del tablero a la izquierda + Resumen y bitácora a la derecha
         JPanel panelCentral = new JPanel(new BorderLayout(10, 10));
         panelCentral.add(crearPanelTablero(asistente.getTablero()), BorderLayout.WEST);
 
@@ -466,7 +595,6 @@ public class Ventana extends JFrame implements IVista, Observador {
         panelCentral.add(new JScrollPane(areaResumen), BorderLayout.CENTER);
         panel.add(panelCentral, BorderLayout.CENTER);
 
-        // Panel inferior con el selector de misión, reiniciar y el estado del Motor Warp
         JPanel panelInferior = new JPanel(new BorderLayout(8, 8));
 
         JPanel panelControles = new JPanel(new BorderLayout(8, 8));
@@ -486,7 +614,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         }
         botonReiniciar.addActionListener(this.listenerFinalizar);
 
-        JPanel panelBotonesMision = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 0));
+        JPanel panelBotonesMision = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelBotonesMision.add(botonEjecutarMision);
         panelBotonesMision.add(botonReiniciar);
         panelControles.add(panelBotonesMision, BorderLayout.EAST);
@@ -555,9 +683,10 @@ public class Ventana extends JFrame implements IVista, Observador {
 
     public void mostrarError(String mensaje) {
         SwingUtilities.invokeLater(() ->
-            JOptionPane.showMessageDialog(this, mensaje, "Datos inválidos",
-            JOptionPane.ERROR_MESSAGE));
+                JOptionPane.showMessageDialog(this, mensaje, "Datos inválidos",
+                        JOptionPane.ERROR_MESSAGE));
     }
+
     @Override
     public String getTipoMision() {
         return (String) selectorMision.getSelectedItem();
@@ -568,8 +697,8 @@ public class Ventana extends JFrame implements IVista, Observador {
         SwingUtilities.invokeLater(() -> {
             areaResumen.setText(crearResumenJuego(this.asistenteActual, informe));
             etiquetaEstado.setText("Estado del motor Warp: "
-                + getNombreEstadoMotorWarp(this.asistenteActual.getEstadoMotorWarp()));
-    });
+                    + getNombreEstadoMotorWarp(this.asistenteActual.getEstadoMotorWarp()));
+        });
     }
 
     @Override
@@ -607,7 +736,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     }
 
     @Override
-    public void actualizar() { // actualizar tablero
+    public void actualizar() {
         if (this.asistenteActual != null) {
             SwingUtilities.invokeLater(() -> {
                 refrescarGrilla(this.asistenteActual.getTablero());
@@ -621,8 +750,8 @@ public class Ventana extends JFrame implements IVista, Observador {
         if (celdasTablero == null) return;
         Posicion posNave = tablero.getPosicionNave();
         Posicion posObjetivo = (this.asistenteActual != null)
-                    ? this.asistenteActual.getObjetivoActual()
-                    : null;
+                ? this.asistenteActual.getObjetivoActual()
+                : null;
         ElementoDelUniverso[][] matriz = tablero.verTablero();
 
         for (int i = 0; i < celdasTablero.length; i++) {
@@ -634,11 +763,10 @@ public class Ventana extends JFrame implements IVista, Observador {
                     celda.setForeground(Color.WHITE);
                     celda.setText("NAVE");
                 } else if (posObjetivo != null && posObjetivo.getX() == i && posObjetivo.getY() == j) {
-                        celda.setBackground(new Color(255, 193, 7)); // Amarillo/Dorado: Objetivo
-                        celda.setForeground(Color.BLACK);
-                        celda.setText("OBJ");
-                    }
-                    else {
+                    celda.setBackground(new Color(255, 193, 7));
+                    celda.setForeground(Color.BLACK);
+                    celda.setText("OBJ");
+                } else {
                     ElementoDelUniverso elem = matriz[i][j];
                     if (elem == null) {
                         celda.setBackground(new Color(20, 24, 35));

@@ -14,7 +14,7 @@ public class Asteroide implements ElementoDelUniverso {
         if (!nave.getDestruida()) {
             nave.aumentarDesgaste(this.danio);
         }
-        String evento = "Evento: Encuentro con un asteroide, Se perdieron " + monto + " puntos de energía y " +  danio + " puntos de daño";
+        String evento = "Evento: Encuentro con un asteroide, Se perdieron " + monto + " puntos de energía y producieron " +  danio + " puntos de daño";
         if (nave.getDestruida()){
             evento += ". La nave no pudo soportar el impacto y resultó destruida.";
         }
