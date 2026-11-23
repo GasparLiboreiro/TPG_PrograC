@@ -10,7 +10,7 @@ import java.util.List;
  * <p><b>Invariantes:</b> no contiene eventos nulos ni vacíos; un evento registrado
  * no puede modificarse ni eliminarse; los eventos se conservan en el orden en que ocurrieron.</p>
  */
-public class Bitacora {
+public class Bitacora{
     private final List<EventoBitacora> eventos = new ArrayList<>();
 
     /**

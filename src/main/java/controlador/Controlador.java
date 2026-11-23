@@ -42,50 +42,52 @@ public class Controlador implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals("iniciar_secion"))
-        {
+        String cmd = e.getActionCommand();
+
+        if ("iniciar_secion".equals(cmd)) {
             DTOUsuario usuario = new DTOUsuario(vista.getNombre(), vista.getContrasenia());
 
-            if(!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario))
+            if (!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario)) {
                 vista.notificarErrorLogin("Nombre y/o Contraseña vacia o de longitud mayor a 50");
-            else if(!sistema.iniciar_secion(usuario))
-                vista.notificarErrorLogin("Datos de inicio de secion invalidos");
-            else
+            } else if (!sistema.iniciar_secion(usuario)) {
+                vista.notificarErrorLogin("Datos de inicio de sesion invalidos");
+            } else {
                 vista.iniciarConfiguracionNave();
-        }
-        else if(e.getActionCommand().equals("registrarse"))
-        {
+            }
+        } else if ("ir_registro".equals(cmd)) {
+            // La vista ya cambia a la tarjeta de registro
+        } else if ("registrarse".equals(cmd)) {
             DTOUsuario usuario = new DTOUsuario(vista.getNombre(), vista.getContrasenia());
 
-            if(!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario))
+            if (!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario)) {
                 vista.notificarErrorLogin("Nombre y/o Contraseña vacia o de longitud mayor a 50");
-            else if(!sistema.registrar_usuario(usuario))
+            } else if (!sistema.registrar_usuario(usuario)) {
                 vista.notificarErrorLogin("Registro insatisfactorio, ya hay un usuario con el nombre ingresado");
-            else
-                vista.iniciarConfiguracionNave();
-        }
-        else if(e.getActionCommand().equals("inicializar")) {
+            } else {
+                vista.iniciarLogin();
+            }
+        } else if ("inicializar".equals(cmd)) {
             try {
                 Nave nave = NaveFactory.crearNave(vista.getTipoNave());
                 Tablero tablero = GeneradorDeUniverso.porDefecto().crearTablero();
                 Asistente asistente = new Asistente(nave, tablero);
                 DatosTripulante datos_capitan = vista.getDatosCapitan();
                 asistente.add_tripulante(TripulanteFactory.crearTripulante(
-                            datos_capitan.getOficio(),
-                            datos_capitan.getOrigen(),
-                            datos_capitan.getNombre(),
-                            datos_capitan.getIdentidad(),
-                            datos_capitan.getAntiguedad()
+                        datos_capitan.getOficio(),
+                        datos_capitan.getOrigen(),
+                        datos_capitan.getNombre(),
+                        datos_capitan.getIdentidad(),
+                        datos_capitan.getAntiguedad()
                 ));
 
                 ArrayList<DatosTripulante> datos_tripulantes = vista.getDatosTripulantes();
-                for(DatosTripulante datos_tripulante : datos_tripulantes) {
+                for (DatosTripulante datos_tripulante : datos_tripulantes) {
                     asistente.add_tripulante(TripulanteFactory.crearTripulante(
-                                datos_tripulante.getOficio(),
-                                datos_tripulante.getOrigen(),
-                                datos_tripulante.getNombre(),
-                                datos_tripulante.getIdentidad(),
-                                datos_tripulante.getAntiguedad()
+                            datos_tripulante.getOficio(),
+                            datos_tripulante.getOrigen(),
+                            datos_tripulante.getNombre(),
+                            datos_tripulante.getIdentidad(),
+                            datos_tripulante.getAntiguedad()
                     ));
                 }
 
@@ -94,24 +96,22 @@ public class Controlador implements ActionListener {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        } else if (e.getActionCommand().equals("ejecutar_mision")) {
+        } else if ("ejecutar_mision".equals(cmd)) {
             ejecutarMisionSeleccionada();
-        } else if (e.getActionCommand().equals("reiniciar")) {
+        } else if ("reiniciar".equals(cmd)) {
             this.sistema.setAsistente(null);
             this.vista.iniciarConfiguracionNave();
-        }
-        else if (e.getActionCommand().equals("Concurrencia")) {
+        } else if ("Concurrencia".equals(cmd)) {
             this.controladorConcurrencia = new ControladorConcurrencia();
             this.controladorConcurrencia.iniciarFlujoCapacidad();
-
         }
     }
 
     private void ejecutarMisionSeleccionada() {
         String tipoMision = vista.getTipoMision();
-        Asistente asistente = sistema.getAsistente(); // (1)
+        Asistente asistente = sistema.getAsistente();
         vista.setControlesMisionHabilitados(false);
-        vista.setReinicioHabilitado(false);            // (2)
+        vista.setReinicioHabilitado(false);
 
         new Thread(() -> {
             try {
@@ -119,8 +119,8 @@ public class Controlador implements ActionListener {
                 InformeMision informe = asistente.ejecutarMision(mision);
                 vista.actualizarVistaJuego(informe);
             } catch (Exception ex) {
-                vista.mostrarError(ex.getMessage());   // (3)
-            } finally {                                // (4)
+                vista.mostrarError(ex.getMessage());
+            } finally {
                 vista.setReinicioHabilitado(true);
                 if (!asistente.getNave().getDestruida()) {
                     vista.setControlesMisionHabilitados(true);
