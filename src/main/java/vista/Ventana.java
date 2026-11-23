@@ -81,6 +81,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         SwingUtilities.invokeLater(this::iniciarLogin);
     }
 
+
     @Override
     public void setTiposNaves(String[] tiposNaves) {
         this.tiposNaves = copiarArray(tiposNaves);
@@ -578,6 +579,10 @@ public class Ventana extends JFrame implements IVista, Observador {
             botonEjecutarMision.setEnabled(habilitado);
             selectorMision.setEnabled(habilitado);
         });
+    }
+    @Override
+    public void setReinicioHabilitado(boolean habilitado) {
+        SwingUtilities.invokeLater(() -> botonReiniciar.setEnabled(habilitado));
     }
 
     private JPanel crearPanelTablero(Tablero tablero) {

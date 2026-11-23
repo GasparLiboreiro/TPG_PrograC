@@ -98,18 +98,17 @@ public abstract class Mision {
                 break;
             }
 
-            // 2. Escaneo con el radar de corto alcance
-            boolean hayObstaculo = asistente.usarRCD(asistente.getPosicion(), camino);
-            if (hayObstaculo) {
-                bitacora.registrar("Obstáculo detectado. Estado del motor: Motor Warp ["
-                + MotorWarp.ESTADO_NOMBRE[asistente.getEstadoMotorWarp()] + "].");
+            // 2. Escaneo con el radar de corto alcance: sólo informa si hay un elemento en la próxima casilla
+            boolean hayElemento = asistente.usarRCD(asistente.getPosicion(), camino);
+            if (hayElemento) {
+                bitacora.registrar("Radar: elemento detectado en la próxima casilla. Se intenta un salto warp.");
             }
 
-
             // 3. Planificación y movimiento: el estado del motor decide cuántas casillas avanza
-            int casillas = asistente.ordenarSalto(hayObstaculo);
-            if (casillas == 2) {
-                bitacora.registrar("¡Salto Warp ejecutado! La nave avanzó 2 casillas evadiendo el obstáculo.");
+            int casillas = asistente.ordenarSalto(hayElemento);
+            String eventoMotor = asistente.getUltimoEventoMotor();
+            if (eventoMotor != null) {
+                bitacora.registrar(eventoMotor);
             }
             if (casillas > 0) {
                 indiceCamino = Math.min(indiceCamino + casillas, camino.size() - 1);

@@ -1,6 +1,6 @@
 package modelo;
 
-import modelo.excepciones.TransicionEstadoInvalida;
+
 
 public class StateMWEnfriamiento implements StateMotorWarp {
     private final MotorWarp motor;
@@ -23,7 +23,9 @@ public class StateMWEnfriamiento implements StateMotorWarp {
     private int enfriar() {
         motor.getNave().aumentarDesgaste(MotorWarp.DESGASTE_ENFRIAMIENTO);
         motor.setEstado(new StateMWDisponible(motor));
-        return 0;
+        motor.registrarEvento("enfriamiento (+" + MotorWarp.DESGASTE_ENFRIAMIENTO
+                + " desgaste), warp no disponible, se realiza un salto normal. Motor disponible.");
+        return motor.saltoNormal();
     }
 
     @Override

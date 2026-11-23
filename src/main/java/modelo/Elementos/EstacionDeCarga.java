@@ -12,10 +12,7 @@ public class EstacionDeCarga implements ElementoDelUniverso {
         nave.cargarEnergia(monto);
         return "Evento: Encuentro con una estación de carga! Se cargaron " + monto + " puntos de energía y combustible";
     }
-    @Override
-    public boolean esObstaculo() {
-        return false; // es una ayuda: conviene pasar por ella, no esquivarla
-    }
+
 
 
 }

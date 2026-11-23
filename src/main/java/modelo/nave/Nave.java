@@ -106,7 +106,8 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
     public void aumentarDesgaste(int cantidad) {
         verificarEstado();
 
-        desgaste += Math.min(100, desgaste + cantidad);
+        desgaste = Math.min(100, desgaste + cantidad);
+
         verificarRecursos();
     }
 
@@ -159,6 +160,8 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
         }
         return false;
     }
+
+
     
     public boolean tieneTripulacionValida() {
         return tripulantes.size() >= 5 && tieneCapitan();
@@ -187,13 +190,13 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
         verificarEstado();
         return motor_warp.saltarWarp();
     }
+    public String getUltimoEventoMotor() {
+        return this.motor_warp.getUltimoEvento();
+    }
 
     @Override
     public abstract String interactuar(Nave nave);
-    @Override
-    public boolean esObstaculo() {
-        return true;
-    }
+
 
   //el unico proposito de este metodo es hacer mas facil el caso en que se enfrentan dos naves iguales
     public abstract String getTipo();

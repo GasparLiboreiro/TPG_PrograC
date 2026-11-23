@@ -28,6 +28,10 @@ public class Asistente {
         return this.nave.getTripulantes();
     }
 
+    public String getUltimoEventoMotor() {
+        return this.nave.getUltimoEventoMotor();
+    }
+
     public int getEstadoMotorWarp() {
         return this.nave.getEstadoMotorWarp();
     }
@@ -121,7 +125,7 @@ public class Asistente {
         int y = camino.get(posI + 1).getY() - camino.get(posI).getY();
         int x = camino.get(posI + 1).getX() -  camino.get(posI).getX();
         ElementoDelUniverso proximo = elementosCercanos[x+1][y+1];
-        return proximo != null && proximo.esObstaculo();
+        return proximo != null;
     }
     /**
      * Genera una ruta paso a paso desde la posicion actual de la nave hasta la posicion del objetivo.

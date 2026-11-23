@@ -1,7 +1,7 @@
 package modelo;
 import modelo.nave.Nave;
 
-import modelo.excepciones.TransicionEstadoInvalida;
+
 
 public class MotorWarp {
     public static int ESTADO_DISPONIBLE = 0;
@@ -21,6 +21,7 @@ public class MotorWarp {
 
     private final Nave nave;
     private StateMotorWarp estado;
+    private String ultimoEvento;
 
     public MotorWarp(Nave nave) {
         this.nave = nave;
@@ -32,6 +33,7 @@ public class MotorWarp {
      * @return casillas que avanza la nave (0, 1 o 2)
      */
     public int saltar() {
+        ultimoEvento = null;
         return estado.saltar();
     }
 
@@ -40,10 +42,15 @@ public class MotorWarp {
      * @return casillas que avanza la nave (0, 1 o 2)
      */
     public int saltarWarp() {
+        ultimoEvento = null;
         return estado.saltarWarp();
     }
     public int getEstado() {
         return estado.getEstado();
+    }
+    /** @return lo que hizo el motor en el último turno, o null si solo hizo un salto normal sin cambios */
+    public String getUltimoEvento() {
+        return ultimoEvento;
     }
     // ---- uso interno de los estados (visibilidad de paquete) ----
 
@@ -67,6 +74,9 @@ public class MotorWarp {
     int saltoNormal() {
         nave.consumirCombustible(Math.min(COSTO_COMBUSTIBLE_SALTO, nave.getCombustible()));
         return 1;
+    }
+    void registrarEvento(String evento) {
+        this.ultimoEvento = "Motor Warp: " + evento;
     }
 }
 
