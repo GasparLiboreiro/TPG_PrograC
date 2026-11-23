@@ -26,4 +26,5 @@ public interface IVista{
     void setTiposOficio(String[] tiposOficio);
     void setTiposMisiones(String[] tiposMisiones);
     void setEstadosMotorWarp(String[] estadosMotorWarp);
+    void setReinicioHabilitado(boolean habilitado);
 }

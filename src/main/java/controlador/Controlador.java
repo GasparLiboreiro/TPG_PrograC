@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class Controlador implements ActionListener {
     private IVista vista;
     private Sistema sistema;
+    private ControladorConcurrencia controladorConcurrencia;
 
     public Controlador(DAOUsuarios dao) {
         this.vista = null;
@@ -101,26 +102,29 @@ public class Controlador implements ActionListener {
             this.sistema.setAsistente(null);
             this.vista.iniciarConfiguracionNave();
         }
+        else if (e.getActionCommand().equals("Concurrencia")) {
+            this.controladorConcurrencia = new ControladorConcurrencia();
+            this.controladorConcurrencia.iniciarFlujoCapacidad();
+
+        }
     }
 
     private void ejecutarMisionSeleccionada() {
         String tipoMision = vista.getTipoMision();
+        Asistente asistente = sistema.getAsistente(); // (1)
         vista.setControlesMisionHabilitados(false);
+        vista.setReinicioHabilitado(false);            // (2)
 
-        // Lanzamos la misión en un hilo separado para no congelar la interfaz
         new Thread(() -> {
             try {
-                Mision mision = MisionFactory.crearMision(tipoMision, sistema.getAsistente());
-                InformeMision informe = sistema.getAsistente().ejecutarMision(mision);
-
+                Mision mision = MisionFactory.crearMision(tipoMision, asistente);
+                InformeMision informe = asistente.ejecutarMision(mision);
                 vista.actualizarVistaJuego(informe);
-                if (!sistema.getAsistente().getNave().getDestruida()) {
-                    vista.setControlesMisionHabilitados(true);
-                }
             } catch (Exception ex) {
-                System.out.println("throws");
-                vista.mostrarError(ex.getMessage());
-                if (!sistema.getAsistente().getNave().getDestruida()) {
+                vista.mostrarError(ex.getMessage());   // (3)
+            } finally {                                // (4)
+                vista.setReinicioHabilitado(true);
+                if (!asistente.getNave().getDestruida()) {
                     vista.setControlesMisionHabilitados(true);
                 }
             }

@@ -1,5 +1,7 @@
 package modelo.nave;
 
+import modelo.excepciones.TipoNaveInvalida;
+
 public class NaveFactory {
     // este array podria usarse en la interfaz grafica para dejar elegir el tipo de nave usando estos nombres
     public static final String[] tipos_naves = {"EXPLORADORA", "CARGUERO", "COMBATE"};
@@ -22,12 +24,15 @@ public class NaveFactory {
     /**
      * Crea una nueva nave del tipo proveido por parametro </br>
      * <b>Pre:</b> tipo es igual a alguna de las opciones en NaveFactory.tipos_naves
+     * @throws TipoNaveInvalida si el tipo es nulo o no es uno de los admitidos
      *
      * @param tipo String con el nombre del tipo de nave, case sensitive
      * @return Instancia de una nave del tipo especificado
      */
     public static Nave crearNave(String tipo) {
-		assert tipo_valido(tipo) :"NaveFactory.crearNave() recibio un tipo invalido: '"+tipo+"'";
+        if (!tipo_valido(tipo)) {
+            throw new TipoNaveInvalida(tipo);
+        }
 
 		switch (tipo.toUpperCase()) {
 	        case "EXPLORADORA":
@@ -37,7 +42,7 @@ public class NaveFactory {
 	        case "COMBATE":
                 return new NaveCombate();
 			default:
-				return null; // no se ejecuta gracias al asserto
+				throw new TipoNaveInvalida(tipo); // no se alcanza: el tipo ya fue validado
 		}
     }
 }

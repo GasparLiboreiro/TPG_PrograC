@@ -1,6 +1,5 @@
 package modelo;
 
-import modelo.excepciones.TransicionEstadoInvalida;
 
 public interface StateMotorWarp {
     /**

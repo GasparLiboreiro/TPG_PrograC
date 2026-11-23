@@ -1,3 +1,8 @@
+/* cambios que creo a futuro a la espera de asistente(hecha asi para test):
+* -integrar los estados del motor a preparar y ejecutar
+*
+* */
+
 package modelo.misiones;
 import modelo.Bitacora;
 import modelo.ElementoDelUniverso;
@@ -16,66 +21,46 @@ public abstract class Mision {
     protected String cartelResultado;
     protected boolean exitosa;
     protected ArrayList<Posicion> camino = new ArrayList<>();
-    private int pausaTurnoMs = 1000; // para que la vista pueda mostrar el avance
+    private int pausaTurnoMs = 300; // para que la vista pueda mostrar el avance
+    protected boolean objetivoVerificado;     // resultado de la verificación en destino
+    private EstadoRecursos recursosIniciales; // antes del consumo de despegue
+    private EstadoRecursos recursosAlLlegar;  // al terminar la travesía
+    private EstadoRecursos recursosFinales;   // después de aplicar el resultado en el cierre
 
-    /**
-     * Inicializa una misión asociada a un asistente.<br>
-     * <b>Pre:</b><br>
-     * - {@code asistente != null}.<br>
-     * <b>Post:</b><br>
-     * - La misión queda vinculada a {@code asistente}, con una {@link Bitacora} vacía y {@code exitosa = false}.
-     *
-     * @param asistente Asistente encargado de operar en la misión.
-     * @throws IllegalArgumentException si {@code asistente} es nulo.
-     */
+
     public Mision(Asistente asistente) {
         if (asistente == null) {
             throw new IllegalArgumentException("El asistente no puede ser nulo.");
         }
-        assert asistente != null : "El asistente no puede ser nulo.";
         this.asistente = asistente;
         this.bitacora = new Bitacora();
         this.exitosa = false;
     }
 
-    /**
-     * Ejecuta el ciclo completo de la misión (preparación, ejecución, evaluación y cierre).<br>
-     * <b>Pre:</b><br>
-     * - El asistente y su nave deben estar en condiciones válidas para iniciar el ciclo.<br>
-     * <b>Post:</b><br>
-     * - Se completan las etapas del ciclo y se devuelve el {@link InformeMision} resultante.
-     *
-     * @return Informe final de la misión.
-     * @throws EstadoInvalido si la misión no puede prepararse o iniciarse por falta de recursos o tripulación inválida.
-     */
-    public final InformeMision ejecutarCiclo() throws EstadoInvalido {
+    public final InformeMision ejecutarCiclo() throws EstadoInvalido { //throws EstadoInvalido para que el que lo llame se entere si no se podia ejecutar aun
         InformeMision informe;
 
         preparar();
+        prepararHook();
         ejecutar();
+        ejecutarHook();
         evaluar();
+        evaluarHook();
         informe = cerrar();
         informe = cerrarHook(informe); // cerrarHook recibe el informe default por si le quiciese hacer alguna modificacion
         return informe;
     }
 
 
-
-    /**
-     * Valida recursos y tripulación, y calcula el objetivo y el camino de la misión.<br>
-     * <b>Pre:</b><br>
-     * - {@code asistente != null} y {@code asistente.getNave() != null}.<br>
-     * <b>Post:</b><br>
-     * - Quedan definidos {@code objetivo} y {@code camino}, y se registra el avance en la bitácora.
-     *
-     * @throws EstadoInvalido si faltan combustible/energía o si la tripulación no es válida.
-     */
     protected void preparar() throws EstadoInvalido {
-        assert asistente != null && asistente.getNave() != null : "El asistente y su nave deben estar inicializados.";
-
         bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos y tripulacion.");
 
-        if (asistente.getNave().getCombustible() < getCostoCombustible() || asistente.getNave().getEnergia() < getCostoEnergia()) {
+        if (asistente.getNave().getDestruida()) {
+            bitacora.registrar("Fallo en preparación: la nave está destruida.");
+            throw new EstadoInvalido("La nave está destruida y no puede iniciar la misión " + getCodigo() + ".");
+        }
+
+        if (!alcanzanLosRecursos(asistente.getNave())) {
 
             bitacora.registrar("Fallo en preparación: recursos insuficientes.");
 
@@ -86,34 +71,51 @@ public abstract class Mision {
             bitacora.registrar("Fallo en preparación: dotación incompleta. Se requiere 1 capitán y al menos 4 tripulantes adicionales.");
 
             throw new EstadoInvalido("La nave no cuenta con la dotación mínima reglamentaria para iniciar la misión.");
+}
+
+        if (exigeNaveSinMantenimientoPendiente() && asistente.getNave().requiereMantenimiento()) {
+            bitacora.registrar("Fallo en preparación: la nave requiere mantenimiento (desgaste " + asistente.getNave().getDesgaste() + "). Solo puede realizar el retorno a base.");
+            throw new EstadoInvalido("La nave requiere mantenimiento: solo puede ejecutar el retorno a base (M-03).");
         }
 
         //EN CASO DE QUE SE PUEDA HACER LA MISION SE OBTIENE EL OBJETIVO Y SE PREPARA LA RUTA.
-        objetivo = asistente.usarRLD();
+        objetivo = obtenerObjetivo();
         camino = asistente.generarCamino(objetivo);
 
         bitacora.registrar("Preparación exitosa: recursos suficientes.");
     }
-
-
-
-
+    /**
+     * Los recursos alcanzan si, después del consumo inicial, la nave sigue operativa:
+     * combustible y energía mayores a 0 y desgaste menor al máximo.
+     */
+    private boolean alcanzanLosRecursos(Nave nave) {
+        return nave.getCombustible() > getCostoCombustible()
+                && nave.getEnergia() > getCostoEnergia()
+                && nave.getDesgaste() + getCostoDesgaste() < Nave.DESGASTE_MAXIMO;
+    }
 
     /**
-     * Aplica el consumo inicial de recursos y avanza la nave por turnos hasta llegar al objetivo o destruirse.<br>
-     * <b>Pre:</b><br>
-     * - {@code asistente != null}, {@code asistente.getNave() != null}, {@code objetivo != null} y {@code camino != null}.<br>
-     * <b>Post:</b><br>
-     * - Se consumen recursos, se recorre el tablero y se asigna {@code cartelResultado} junto con sus registros en {@code bitacora}.
+     * Indica si la misión exige que la nave no requiera mantenimiento.
+     * Por defecto sí; el retorno a base lo redefine porque es la misión que hace el mantenimiento.
      */
-    protected void ejecutar() {
-        assert asistente != null && asistente.getNave() != null : "El asistente y su nave deben estar inicializados.";
-        assert objetivo != null : "El objetivo de la misión debe estar definido antes de ejecutar.";
-        assert camino != null : "El camino de la misión debe estar inicializado antes de ejecutar.";
+    protected boolean exigeNaveSinMantenimientoPendiente() {
+        return true;
+    }
 
+    /** Objetivo de la misión. Por defecto lo calcula el radar de largo alcance; M-03 lo redefine (base de origen). */
+    protected Posicion obtenerObjetivo() {
+        return asistente.usarRLD();
+    }
+
+    protected void prepararHook() {
+    }
+
+    protected void ejecutar() {
         Destino destino = Destino.getInstancia(asistente.getTablero());
         Nave nave = asistente.getNave();
         int indiceCamino = 0;                        // posición actual de la nave dentro de camino
+
+        recursosIniciales = EstadoRecursos.de(nave);
 
         //CONSUMO DE RECURSOS DE LA MISION
         nave.consumirCombustible(getCostoCombustible());
@@ -121,6 +123,8 @@ public abstract class Mision {
         nave.aumentarDesgaste(getCostoDesgaste());
         bitacora.registrar("Consumo aplicado: -" + getCostoCombustible() + " comb, -" +
                 getCostoEnergia() + " energ, +" + getCostoDesgaste() + " desgaste.");
+
+
 
         while (!nave.getDestruida() && !asistente.getPosicion().equals(objetivo)) {
             // A. Turno de la nave
@@ -133,22 +137,23 @@ public abstract class Mision {
                 break;
             }
 
-            // 2. Escaneo con el radar de corto alcance
-            boolean hayObstaculo = asistente.usarRCD(asistente.getPosicion(), camino);
-            if (hayObstaculo) {
-                bitacora.registrar("Obstáculo detectado. Estado del motor: Motor Warp ["
-                        + MotorWarp.ESTADO_NOMBRE[asistente.getEstadoMotorWarp()] + "].");
+            // 2. Escaneo con el radar de corto alcance: sólo informa si hay un elemento en la próxima casilla
+            boolean hayElemento = asistente.usarRCD(asistente.getPosicion(), camino);
+            if (hayElemento) {
+                bitacora.registrar("Radar: elemento detectado en la próxima casilla. Se intenta un salto warp.");
             }
 
             // 3. Planificación y movimiento: el estado del motor decide cuántas casillas avanza
-            int casillas = asistente.ordenarSalto(hayObstaculo);
-            if (casillas == 2) {
-                bitacora.registrar("¡Salto Warp ejecutado! La nave avanzó 2 casillas evadiendo el obstáculo.");
+            int casillas = asistente.ordenarSalto(hayElemento);
+            String eventoMotor = asistente.getUltimoEventoMotor();
+            if (eventoMotor != null) {
+                bitacora.registrar(eventoMotor);
             }
             if (casillas > 0) {
                 indiceCamino = Math.min(indiceCamino + casillas, camino.size() - 1);
                 asistente.moverNave(camino.get(indiceCamino));
             }
+
 
             // B. Turno del tablero
             destino.turnoDestino();
@@ -161,74 +166,59 @@ public abstract class Mision {
             }
         }
 
-        if (asistente.getNave().getDestruida()) {
+
+        recursosAlLlegar = EstadoRecursos.de(nave);
+        if (nave.getDestruida()) {
+            this.objetivoVerificado = false;
             this.cartelResultado = "La nave fue destruida durante la travesía. Misión " + getCodigo() + " fallida.";
+        } else if (!asistente.getPosicion().equals(objetivo)) {
+            this.objetivoVerificado = false;
+            this.cartelResultado = "La misión " + getCodigo() + " fue interrumpida antes de llegar al objetivo.";
         } else {
+            // Verificación en destino: la misión comprueba si puede cumplir su objetivo (el descuento se hace en el cierre)
+            this.objetivoVerificado = verificarEnDestino();
             this.cartelResultado = ejecutarMision();
         }
-        bitacora.registrar("Acción realizada: " + this.cartelResultado);
+        bitacora.registrar("Acción realizada: " + this.cartelResultado);}
+    protected void ejecutarHook() {
     }
 
-
     /**
-     * Evalúa si la misión resultó exitosa y registra el resultado en la bitácora.<br>
-     * <b>Pre:</b><br>
-     * - {@code asistente != null} y {@code asistente.getNave() != null}.<br>
-     * <b>Post:</b><br>
-     * - {@code exitosa} queda en {@code true} si la nave no fue destruida y {@code cartelResultado} no es nulo ni vacío; en caso contrario queda en {@code false}.
+     * Verificación en destino, al llegar al objetivo. Por defecto el objetivo se cumple al llegar;
+     * las misiones que exigen condiciones adicionales (M-01) la redefinen.
      */
+    protected boolean verificarEnDestino() {
+        return true;
+    }
+
     protected void evaluar() {
-        assert asistente != null && asistente.getNave() != null : "El asistente y su nave deben estar inicializados.";
-
-        this.exitosa = !asistente.getNave().getDestruida() && this.cartelResultado != null && !this.cartelResultado.isEmpty();
-        bitacora.registrar("Evaluación de la misión: " + (exitosa ? "ÉXITO" : "FALLO"));
+        this.exitosa = !asistente.getNave().getDestruida() && objetivoVerificado;
+        bitacora.registrar("Evaluación de la misión: " + (exitosa ? "ÉXITO" : "FALLO") + ".");
+        bitacora.registrar("Balance de la travesía (" + recursosAlLlegar.variacionDesde(recursosIniciales) + ").");
+    }
+    protected void evaluarHook() {
     }
 
-
-
-    /**
-     * Registra la finalización y construye el informe básico de la misión.<br>
-     * <b>Pre:</b><br>
-     * - {@code asistente != null} y {@code asistente.getNave() != null}.<br>
-     * <b>Post:</b><br>
-     * - Devuelve un {@link InformeMision} no nulo construido a partir de esta misión y la nave actual.
-     *
-     * @return Informe básico de la misión.
-     */
     protected InformeMision cerrar() {
-        assert asistente != null && asistente.getNave() != null : "El asistente y su nave deben estar inicializados.";
-
+        if (exitosa) {
+            aplicarResultado(); // ganancias o entregas de la misión, impactadas recién en el cierre
+        }
+        recursosFinales = EstadoRecursos.de(asistente.getNave());
         bitacora.registrar("Misión finalizada. Emitiendo informe.");
         return new InformeMision(this, asistente.getNave());
     }
 
-    /**
-     * Hook extensible para personalizar o envolver el informe emitido en {@link #cerrar()}.<br>
-     * <b>Pre:</b><br>
-     * - Ninguna.<br>
-     * <b>Post:</b><br>
-     * - Por defecto devuelve el mismo {@code informe_basico} recibido.
-     *
-     * @param informe_basico Informe generado por {@link #cerrar()}.
-     * @return Informe final a retornar.
-     */
+    /** Aplica en el cierre las ganancias o entregas de la misión. Solo se llama si la misión fue exitosa. */
+    protected void aplicarResultado() {
+    }
     protected InformeMision cerrarHook(InformeMision informe_basico) {
         return informe_basico;
     }
-
-
-
     /**
-     * Cambia la pausa entre turnos de la travesía.<br>
-     * <b>Pre:</b><br>
-     * - {@code pausaTurnoMs >= 0}.<br>
-     * <b>Post:</b><br>
-     * - El tiempo de pausa entre turnos queda actualizado a {@code pausaTurnoMs}.
-     *
+     * Cambia la pausa entre turnos de la travesía.
      * @param pausaTurnoMs milisegundos de pausa, mayor o igual a 0
      */
     public void setPausaTurno(int pausaTurnoMs) {
-        assert pausaTurnoMs >= 0 : "La pausa entre turnos no puede ser negativa.";
         this.pausaTurnoMs = pausaTurnoMs;
     }
 
@@ -239,65 +229,20 @@ public abstract class Mision {
     public String getCartelResultado() {
         return cartelResultado;
     }
+    public EstadoRecursos getRecursosIniciales() { return recursosIniciales; }
+    public EstadoRecursos getRecursosAlLlegar() { return recursosAlLlegar; }
+    public EstadoRecursos getRecursosFinales() { return recursosFinales; }
+
     public Bitacora getBitacora() {
         return bitacora;
     }
 
     // Métodos a definir por las misiones
-
-    /**
-     * Obtiene el código identificador de la misión.<br>
-     * <b>Pre:</b><br>
-     * - Ninguna.<br>
-     * <b>Post:</b><br>
-     * - Devuelve una cadena no nula y no vacía con el código de la misión.
-     *
-     * @return Código de la misión.
-     */
     public abstract String getCodigo();
-
-    /**
-     * Obtiene el costo de combustible requerido para la misión.<br>
-     * <b>Pre:</b><br>
-     * - Ninguna.<br>
-     * <b>Post:</b><br>
-     * - Devuelve un valor mayor o igual a {@code 0}.
-     *
-     * @return Costo de combustible.
-     */
     public abstract int getCostoCombustible();
-
-    /**
-     * Obtiene el costo de energía requerido para la misión.<br>
-     * <b>Pre:</b><br>
-     * - Ninguna.<br>
-     * <b>Post:</b><br>
-     * - Devuelve un valor mayor o igual a {@code 0}.
-     *
-     * @return Costo de energía.
-     */
     public abstract int getCostoEnergia();
-
-    /**
-     * Obtiene el desgaste producido por la misión.<br>
-     * <b>Pre:</b><br>
-     * - Ninguna.<br>
-     * <b>Post:</b><br>
-     * - Devuelve un valor mayor o igual a {@code 0}.
-     *
-     * @return Costo de desgaste.
-     */
     public abstract int getCostoDesgaste();
-
-    /**
-     * Ejecuta la acción específica de la misión al alcanzar el objetivo.<br>
-     * <b>Pre:</b><br>
-     * - La nave ha alcanzado el objetivo sin ser destruida.<br>
-     * <b>Post:</b><br>
-     * - Devuelve un mensaje descriptivo del resultado de la acción realizada.
-     *
-     * @return Cartel descriptivo del resultado de la misión.
-     */
+    /** Acción en el destino: describe lo que hace la misión al llegar (sin modificar recursos, eso va en el cierre). */
     protected abstract String ejecutarMision();
 
 }

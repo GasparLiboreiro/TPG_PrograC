@@ -97,6 +97,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         SwingUtilities.invokeLater(this::iniciarLogin);
     }
 
+
     @Override
     public void setTiposNaves(String[] tiposNaves) {
         this.tiposNaves = copiarArray(tiposNaves);
@@ -336,7 +337,7 @@ public class Ventana extends JFrame implements IVista, Observador {
         contenido.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         contenido.add(crearPanelSuperior(), BorderLayout.NORTH);
         contenido.add(crearPanelTripulacion(), BorderLayout.CENTER);
-        contenido.add(crearBotonFinalizar(), BorderLayout.SOUTH);
+        contenido.add(crearPanelInferior(), BorderLayout.SOUTH);
         setContentPane(contenido);
     }
 
@@ -428,6 +429,32 @@ public class Ventana extends JFrame implements IVista, Observador {
         finalizar.addActionListener(evento -> finalizarConfiguracion());
         return finalizar;
     }
+
+    private JPanel crearPanelInferior() {
+            JPanel panelInferior = new JPanel(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.weightx = 1;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.insets = new Insets(0, 0, 6, 0);
+
+            c.gridy = 0;
+            panelInferior.add(crearBotonConcurrencia(), c);
+
+            c.gridy = 1;
+            c.insets = new Insets(0, 0, 0, 0);
+            panelInferior.add(crearBotonFinalizar(), c);
+
+            return panelInferior;
+        }
+    private JButton crearBotonConcurrencia() {
+        JButton concurrencia = new JButton("Concurrencia");
+        concurrencia.setActionCommand("Concurrencia");
+        concurrencia.addActionListener(this.listenerFinalizar);
+        return concurrencia;
+    }
+
+
 
     private GridBagConstraints restricciones() {
         GridBagConstraints c = new GridBagConstraints();
@@ -707,6 +734,10 @@ public class Ventana extends JFrame implements IVista, Observador {
             botonEjecutarMision.setEnabled(habilitado);
             selectorMision.setEnabled(habilitado);
         });
+    }
+    @Override
+    public void setReinicioHabilitado(boolean habilitado) {
+        SwingUtilities.invokeLater(() -> botonReiniciar.setEnabled(habilitado));
     }
 
     private JPanel crearPanelTablero(Tablero tablero) {

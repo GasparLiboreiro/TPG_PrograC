@@ -20,10 +20,7 @@ public class Asteroide implements ElementoDelUniverso {
         }
         return evento;
     }
-    @Override
-    public boolean esObstaculo() {
-        return true;
-    }
+
 
 
 }

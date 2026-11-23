@@ -1,5 +1,6 @@
 package modelo.misiones;
 import modelo.Asistente;
+import modelo.excepciones.TipoMisionInvalida;
 
 public class MisionFactory {
     // este array podria usarse en la interfaz grafica para dejar elegir las misiones usando estos nombres
@@ -13,12 +14,16 @@ public class MisionFactory {
      *
      * @param tipo String con el nombre del tipo de mision, case sensitive
      * @param asistente Instancia del asistente que va a ejecutar la mision
-     * @throws IllegalArgumentException si asistente es null o el tipo es invalido
+     * @throws IllegalArgumentException si asistente es null
+     * @throws TipoMisionInvalida si el tipo es nulo o invalido
      * @return Instancia de una mision del tipo especificado
      */
     public static Mision crearMision(String tipo, Asistente asistente) {
         if (asistente==null) {
-        	throw new IllegalArgumentException("MisionFactory.crearMision() recibio un asistente nula");
+        	throw new IllegalArgumentException("MisionFactory.crearMision() recibio un asistente nulo");
+        }
+        if (tipo == null) {
+            throw new TipoMisionInvalida(null);
         }
         switch(tipo.toUpperCase()){
             case "INTERCEPCION":
@@ -28,7 +33,7 @@ public class MisionFactory {
             case "RETORNO":
                 return new MisionRetorno(asistente);
             default:
-            	throw new IllegalArgumentException("MisionFactory.crearMision() recibio un tipo de mision invalido: '"+tipo+"'");
+            	throw new TipoMisionInvalida(tipo);
         }
     }
 }

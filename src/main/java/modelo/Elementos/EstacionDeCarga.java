@@ -4,18 +4,15 @@ import modelo.ElementoDelUniverso;
 import modelo.nave.Nave;
 
 public class EstacionDeCarga implements ElementoDelUniverso {
-    private int monto = 50; //analizar como hacemos con esto si por monto unico, monto separado o porcentaje del total.
+    private int monto = 50; // carga hasta 50 de combustible y 50 de energía, sin superar la capacidad de la nave
 
     @Override
     public String interactuar(Nave nave) {
-        nave.cargarCombustible(monto);
-        nave.cargarEnergia(monto);
-        return "Evento: Encuentro con una estación de carga! Se cargaron " + monto + " puntos de energía y combustible";
+        int combustible = Math.min(monto, nave.getEspacioCombustible());
+        int energia = Math.min(monto, nave.getEspacioEnergia());
+        nave.cargarCombustible(combustible);
+        nave.cargarEnergia(energia);
+        return "Evento: Encuentro con una estación de carga. Se cargaron " + combustible
+                + " de combustible y " + energia + " de energía.";
     }
-    @Override
-    public boolean esObstaculo() {
-        return false; // es una ayuda: conviene pasar por ella, no esquivarla
-    }
-
-
 }

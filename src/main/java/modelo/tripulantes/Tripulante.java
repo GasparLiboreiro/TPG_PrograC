@@ -6,6 +6,9 @@ public abstract class Tripulante{
     private int antiguedad;
 
     public Tripulante(String nombre, String identidad, int antiguedad) {
+        if (antiguedad < 0) {
+            throw new IllegalArgumentException("La antigüedad no puede ser negativa: " + antiguedad);
+        }
         this.nombre = nombre;
         this.identidad = identidad;
         this.antiguedad = antiguedad;
@@ -23,6 +26,9 @@ public abstract class Tripulante{
     }
 
     public void setAntiguedad(int antiguedad) {
+        if (antiguedad < 0) {
+            throw new IllegalArgumentException("La antigüedad no puede ser negativa: " + antiguedad);
+        }
         this.antiguedad = antiguedad;
     }
 

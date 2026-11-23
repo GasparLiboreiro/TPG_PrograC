@@ -1,6 +1,6 @@
 package modelo;
 
-import modelo.excepciones.TransicionEstadoInvalida;
+
 
 public class StateMWEnWarp implements StateMotorWarp {
     private final MotorWarp motor;
@@ -11,25 +11,21 @@ public class StateMWEnWarp implements StateMotorWarp {
 
     @Override
     public int saltar() {
-        return ejecutarSalto();
+        return motor.saltoNormal();
     }
 
     @Override
     public int saltarWarp() {
-        return ejecutarSalto();
-    }
-
-    private int ejecutarSalto() {
         if (!motor.hayEnergiaParaWarp()) {
-            // los recursos ya no están: se aborta el warp y se hace un salto simple
             motor.setEstado(new StateMWDisponible(motor));
+            motor.registrarEvento("salto warp abortado por falta de energía, se realiza un salto normal.");
             return motor.saltoNormal();
         }
         motor.getNave().consumirEnergia(MotorWarp.COSTO_ENERGIA_WARP);
         motor.setEstado(new StateMWEnfriamiento(motor));
+        motor.registrarEvento("salto warp ejecutado, la nave avanza 2 casillas (-" + MotorWarp.COSTO_ENERGIA_WARP + " energía).");
         return 2;
     }
-
     @Override
     public int getEstado() {
         return MotorWarp.ESTADO_EN_WARP;
