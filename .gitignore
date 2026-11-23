@@ -6,3 +6,13 @@ target/
 .classpath
 .project
 bin/
+
+# Datos locales de la aplicación
+usuarios.db
+usuarios.xml
+usersdb.xml
+
+# IntelliJ (archivos locales)
+.idea/workspace.xml
+.idea/claudeCodeTabState.xml
+.idea/.name
