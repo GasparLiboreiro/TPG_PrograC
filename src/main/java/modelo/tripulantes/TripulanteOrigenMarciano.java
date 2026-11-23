@@ -11,8 +11,8 @@ public class TripulanteOrigenMarciano extends TripulanteOrigenDecorator{
     }
 
     @Override
-    public double calcularHaberes() {
-        return this.tripulante_base.calcularHaberes() + 18;
+    protected double getSubsidioOrigen() {
+        return 18;
     }
 
     @Override

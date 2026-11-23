@@ -1,5 +1,9 @@
 package modelo.tripulantes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 // esta clase solo sirve para englobar a todos los decorators de origen
 public abstract class TripulanteOrigenDecorator extends Tripulante{
     // array util para el factory de Tripulantes y para la interfaz grafica
@@ -43,8 +47,16 @@ public abstract class TripulanteOrigenDecorator extends Tripulante{
     // las subclases decoradoras de origen deben escribir estos metodos
     @Override
     public abstract String getPlanetaDeOrigen();
+    /** @return el detalle del tripulante decorado más el subsidio por origen */
     @Override
-    public abstract double calcularHaberes();
+    public List<ConceptoHaber> getDetalleHaberes() {
+        List<ConceptoHaber> detalle = new ArrayList<>(tripulante_base.getDetalleHaberes());
+        detalle.add(new ConceptoHaber("Subsidio por origen " + getPlanetaDeOrigen(), getSubsidioOrigen()));
+        return Collections.unmodifiableList(detalle);
+    }
+
+    /** Subsidio mensual por origen; cada decorador de origen define su importe. */
+    protected abstract double getSubsidioOrigen();
     @Override
     public abstract String toString();
 }

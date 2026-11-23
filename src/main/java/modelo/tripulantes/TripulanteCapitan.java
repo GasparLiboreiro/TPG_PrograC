@@ -1,5 +1,7 @@
 package modelo.tripulantes;
 
+import java.util.List;
+
 public class TripulanteCapitan extends Tripulante {
     public TripulanteCapitan(String nombre, String identidad, int antiguedad) {
         super(nombre, identidad, antiguedad);
@@ -16,9 +18,11 @@ public class TripulanteCapitan extends Tripulante {
     }
 
     @Override
-    public double calcularHaberes() {
-        double base_oficio = 1000;
-        return base_oficio + base_oficio*0.20*this.getAntiguedad();
+    public List<ConceptoHaber> getDetalleHaberes() {
+        double baseOficio = 1000;
+        return List.of(
+                new ConceptoHaber("Cargo Capitan", baseOficio),
+                new ConceptoHaber("Antigüedad (" + getAntiguedad() + " años x 20%)", baseOficio * 0.20 * getAntiguedad()));
     }
     public String toString(){
         return super.toString()+"  Oficio:'Capitan'";

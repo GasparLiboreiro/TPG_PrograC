@@ -11,8 +11,8 @@ public class TripulanteOrigenTerricola extends TripulanteOrigenDecorator {
     }
 
     @Override
-    public double calcularHaberes() {
-        return this.tripulante_base.calcularHaberes() + 20; // plus de origen
+    protected double getSubsidioOrigen() {
+        return 20;
     }
 
     @Override

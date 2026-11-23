@@ -11,8 +11,8 @@ public class TripulanteOrigenVulcano extends TripulanteOrigenDecorator {
     }
 
     @Override
-    public double calcularHaberes() {
-        return this.tripulante_base.calcularHaberes() + 30; // plus de origen
+    protected double getSubsidioOrigen() {
+        return 30;
     }
 
     @Override

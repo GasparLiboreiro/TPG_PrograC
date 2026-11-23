@@ -1,5 +1,7 @@
 package modelo.tripulantes;
 
+import java.util.List;
+
 public abstract class Tripulante{
     private String nombre;
     private String identidad;
@@ -36,7 +38,32 @@ public abstract class Tripulante{
 
     public abstract String getPlanetaDeOrigen(); // las instancias hijas de "TripulanteConcreto" definen este return como null porque no conoce el origen, el decorator hijo de "TripulanteOrigen" 'pisa' esta funcion
 
-    public abstract double calcularHaberes();
+    /**
+     * Detalle del haber mensual: un concepto por cada aporte (cargo, antigüedad, consejos, origen).
+     * @return lista de solo lectura con los conceptos
+     */
+    public abstract List<ConceptoHaber> getDetalleHaberes();
+
+    /** @return el haber mensual total: la suma de los conceptos del detalle */
+    public final double calcularHaberes() {
+        double total = 0;
+        for (ConceptoHaber concepto : getDetalleHaberes()) {
+            total += concepto.getImporte();
+        }
+        return total;
+    }
+
+    /** @return el detalle como texto, por ejemplo "Cargo Capitán: 1000.0 PG + Antigüedad (2 años x 20%): 400.0 PG" */
+    public String getDetalleHaberesTexto() {
+        StringBuilder texto = new StringBuilder();
+        for (ConceptoHaber concepto : getDetalleHaberes()) {
+            if (texto.length() > 0) {
+                texto.append(" + ");
+            }
+            texto.append(concepto);
+        }
+        return texto.toString();
+    }
 
     public String toString(){
         return "Nombre:'"+nombre+"'  No. de identidad:'"+identidad+"'  Anios de antiguedad:"+antiguedad;

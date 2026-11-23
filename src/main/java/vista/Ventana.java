@@ -541,7 +541,8 @@ public class Ventana extends JFrame implements IVista, Observador {
         while (it.hasNext()) {
             modelo.tripulantes.Tripulante t = it.next();
             sb.append("- ").append(t.toString())
-                    .append(" | Haberes: $").append(t.calcularHaberes()).append("\n");
+                    .append(" | Haberes: $").append(t.calcularHaberes())
+                    .append(" (").append(t.getDetalleHaberesTexto()).append(")\n");
         }
 
         if (ultimoInforme != null) {
