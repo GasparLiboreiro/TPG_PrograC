@@ -30,7 +30,7 @@ del equipo y forma de verificación.
   Anexo, la Aclaración y la guía (rúbrica de evaluación).
 - **Componentes:** ninguno (solo análisis).
 - **Resultado aprovechado:** lista de requisitos cumplidos y pendientes, que se usó para priorizar el trabajo.
-- **Revisión del equipo:** La sugerencia de quitar el singleton de Destino se rechazó porque es una clase de la cátedra.
+- **Revisión del equipo:** Tambien se analiso el repositorio y la consigna manualmente
 - **Verificación:** comparación manual con los PDFs de la consigna.
 
 ### 2. Generador del universo

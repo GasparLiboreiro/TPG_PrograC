@@ -118,7 +118,7 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Agrega gemas a la bodega de la nave.<br>
-     * <b>Pre:</b> la nave no está destruida y {@code cantidad >= 0}.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> {@code gemas} aumenta en {@code cantidad}.
      *
      * @param cantidad Cantidad de gemas a agregar.
@@ -126,9 +126,6 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
      * @throws IllegalStateException si la nave está destruida.
      */
     public void agregarGemas(int cantidad) {
-        assert !destruida : "La nave no puede estar destruida.";
-        assert cantidad >= 0 : "La cantidad de gemas a agregar no puede ser negativa.";
-
         verificarEstado();
         validarCantidad(cantidad);
         gemas += cantidad;
@@ -150,7 +147,7 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
     /**
      * Evalúa si los niveles de combustible, energía o desgaste obligan a destruir la nave.<br>
      * <b>Pre:</b> ninguna.<br>
-     * <b>Post:</b> si {@code combustible == 0}, {@code energia == 0} o {@code desgaste >= DESGASTE_MAXIMO}, invoca {@link #destruir()}.
+     * <b>Post:</b> si {@code combustible == 0} o {@code desgaste >= DESGASTE_MAXIMO}, invoca {@link #destruir()}.
      */
     private void verificarRecursos() {
         if (combustible == 0 || desgaste >= DESGASTE_MAXIMO) {
@@ -196,14 +193,12 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Realiza el mantenimiento: lleva el desgaste a 0.<br>
-     * <b>Pre:</b> la nave no está destruida.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> {@code desgaste} queda en {@code 0}.
      *
      * @throws IllegalStateException si la nave está destruida.
      */
     public void realizarMantenimiento() {
-        assert !destruida : "La nave no puede estar destruida para realizar mantenimiento.";
-
         verificarEstado();
         desgaste = 0;
     }
@@ -214,7 +209,7 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Consume una cantidad de combustible de la nave y verifica sus recursos.<br>
-     * <b>Pre:</b> la nave no está destruida, {@code 0 <= cantidad <= combustible disponible}.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> el combustible baja en cantidad; si llega a 0 la nave se destruye.<br>
      *
      * @param cantidad Cantidad de combustible a consumir.
@@ -222,10 +217,6 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
      * @throws IllegalStateException si la nave está destruida o no hay combustible suficiente (sin modificar la nave).
      */
     public void consumirCombustible(int cantidad) {
-        assert !destruida : "La nave no puede estar destruida.";
-        assert cantidad >= 0 : "La cantidad de combustible a consumir no puede ser negativa.";
-        assert cantidad <= combustible : "No hay combustible suficiente para consumir.";
-
         verificarEstado();
         validarCantidad(cantidad);
         if (cantidad > combustible) {
@@ -237,18 +228,14 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Consume una cantidad de energía de la nave y verifica sus recursos.<br>
-     * <b>Pre:</b> la nave no está destruida, {@code 0 <= cantidad <= energía disponible}.<br>
-     * <b>Post:</b> la energía baja en cantidad; si llega a 0 la nave se destruye.<br>
+     * <b>Pre:</b> ninguna.<br>
+     * <b>Post:</b> la energía baja en cantidad.<br>
      *
      * @param cantidad Cantidad de energía a consumir.
      * @throws IllegalArgumentException si cantidad es negativa.
      * @throws IllegalStateException si la nave está destruida o no hay energía suficiente (sin modificar la nave).
      */
     public void consumirEnergia(int cantidad) {
-        assert !destruida : "La nave no puede estar destruida.";
-        assert cantidad >= 0 : "La cantidad de energía a consumir no puede ser negativa.";
-        assert cantidad <= energia : "No hay energía suficiente para consumir.";
-
         verificarEstado();
         validarCantidad(cantidad);
         if (cantidad > energia) {
@@ -260,7 +247,7 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Incrementa el desgaste de la nave hasta el tope máximo permitido.<br>
-     * <b>Pre:</b> la nave no está destruida y {@code cantidad >= 0}.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> el desgaste sube en cantidad, con tope {@link #DESGASTE_MAXIMO}; al alcanzarlo la nave se destruye.<br>
      *
      * @param cantidad Cantidad de desgaste a sumar.
@@ -268,9 +255,6 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
      * @throws IllegalStateException si la nave está destruida.
      */
     public void aumentarDesgaste(int cantidad) {
-        assert !destruida : "La nave no puede estar destruida.";
-        assert cantidad >= 0 : "La cantidad de desgaste a aumentar no puede ser negativa.";
-
         verificarEstado();
         validarCantidad(cantidad);
         desgaste = Math.min(DESGASTE_MAXIMO, desgaste + cantidad);
@@ -279,7 +263,7 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Carga combustible en la nave sin superar la capacidad máxima.<br>
-     * <b>Pre:</b> la nave no está destruida, {@code 0 <= cantidad <= getEspacioCombustible()}.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> el combustible aumenta en {@code cantidad}.<br>
      *
      * @param cantidad Cantidad de combustible a cargar.
@@ -287,10 +271,6 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
      * @throws IllegalStateException si la nave está destruida o la carga supera la capacidad (sin modificar la nave).
      */
     public void cargarCombustible(int cantidad) {
-        assert !destruida : "La nave no puede estar destruida.";
-        assert cantidad >= 0 : "La cantidad de combustible a cargar no puede ser negativa.";
-        assert cantidad <= getEspacioCombustible() : "La carga de combustible supera el espacio disponible.";
-
         verificarEstado();
         validarCantidad(cantidad);
         if (cantidad > getEspacioCombustible()) {
@@ -302,7 +282,7 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Carga energía en la nave sin superar la capacidad máxima.<br>
-     * <b>Pre:</b> la nave no está destruida, {@code 0 <= cantidad <= getEspacioEnergia()}.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> la energía aumenta en {@code cantidad}.<br>
      *
      * @param cantidad Cantidad de energía a cargar.
@@ -310,10 +290,6 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
      * @throws IllegalStateException si la nave está destruida o la carga supera la capacidad (sin modificar la nave).
      */
     public void cargarEnergia(int cantidad) {
-        assert !destruida : "La nave no puede estar destruida.";
-        assert cantidad >= 0 : "La cantidad de energía a cargar no puede ser negativa.";
-        assert cantidad <= getEspacioEnergia() : "La carga de energía supera el espacio disponible.";
-
         verificarEstado();
         validarCantidad(cantidad);
         if (cantidad > getEspacioEnergia()) {
@@ -325,16 +301,15 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Añade un tripulante a la nave.<br>
-     * <b>Pre:</b> la nave no está destruida y {@code tripulante != null}.<br>
+     * <b>Pre:</b> ninguna.<br>
      * <b>Post:</b> si la identidad no está repetida y no se duplica el capitán, el tripulante queda añadido a la tripulación.<br>
      *
      * @param tripulante Tripulante a añadir a la nave.
      * @throws Exception si ya hay un tripulante registrado con el mismo identificador o si se intenta añadir un capitán ya habiendo un capitán en la tripulación.
+     * @throws IllegalArgumentException si {@code tripulante} es nulo.
+     * @throws IllegalStateException si la nave está destruida.
      */
     public void addTripulante(Tripulante tripulante) throws Exception { // hago que lanze la exepcion en vez de ser runtime para que no rompa el sistema y que lo resuelva
-        assert !destruida : "La nave no puede estar destruida.";
-        assert tripulante != null : "El tripulante a agregar no puede ser nulo.";
-
         verificarEstado();
         if (tripulante == null) {
             throw new IllegalArgumentException("El tripulante a agregar no puede ser nulo.");
@@ -388,13 +363,13 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Turno de movimiento con el camino despejado. Delega en el motor warp.<br>
-     * <b>Pre:</b> la nave no está destruida y {@code motor_warp != null}.<br>
+     * <b>Pre:</b> {@code motor_warp != null}.<br>
      * <b>Post:</b> delega el avance en {@code motor_warp.saltar()} y devuelve las casillas avanzadas.<br>
      *
      * @return casillas que avanza la nave (0, 1 o 2).
+     * @throws IllegalStateException si la nave está destruida.
      */
     public int saltar() {
-        assert !destruida : "La nave no puede estar destruida.";
         assert motor_warp != null : "El motor warp no puede ser nulo.";
 
         verificarEstado();
@@ -403,13 +378,13 @@ public abstract class Nave implements ElementoDelUniverso, Batalla {
 
     /**
      * Turno de movimiento con un obstáculo adelante. Delega en el motor warp.<br>
-     * <b>Pre:</b> la nave no está destruida y {@code motor_warp != null}.<br>
+     * <b>Pre:</b> {@code motor_warp != null}.<br>
      * <b>Post:</b> delega el avance en {@code motor_warp.saltarWarp()} y devuelve las casillas avanzadas.<br>
      *
      * @return casillas que avanza la nave (0, 1 o 2).
+     * @throws IllegalStateException si la nave está destruida.
      */
     public int saltarWarp() {
-        assert !destruida : "La nave no puede estar destruida.";
         assert motor_warp != null : "El motor warp no puede ser nulo.";
 
         verificarEstado();

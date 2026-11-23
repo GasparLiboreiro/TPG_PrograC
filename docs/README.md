@@ -48,7 +48,7 @@ mvn compile exec:java -Dexec.mainClass=Prueba -Dexec.classpathScope=test
 
 ### Uso
 
-1. **Acceso:** registrar un usuario nuevo o iniciar sesión (nombre y contraseña de 1 a 50 caracteres).
+1. **Acceso:** iniciar sesión con nombre y contraseña (1 a 50 caracteres). Para crear un usuario, "Registrarse" abre el formulario de registro; al crearlo se vuelve al login con el nombre ya cargado.
 2. **Creación:** elegir el tipo de nave (exploradora, carguero o combate), cargar al capitán y al menos
    4 tripulantes, y finalizar.
 3. **Control de la nave:** se muestran los recursos, la tripulación con el detalle de haberes, la bitácora,
@@ -89,7 +89,7 @@ src/test/java           Prueba (programa principal) y PruebaDAO
 | Patrón | Dónde | Para qué |
 |---|---|---|
 | State | `MotorWarp` + `StateMWDisponible`, `StateMWPreparandoSalto`, `StateMWEnWarp`, `StateMWEnfriamiento` | Cada estado decide cuánto avanza la nave y a qué estado pasa; el motor solo expone `saltar()` y `saltarWarp()`. |
-| Template Method | `Mision.ejecutarCiclo()` | Ciclo fijo preparar → ejecutar → evaluar → cerrar; cada misión redefine hooks (`obtenerObjetivo`, `verificarEnDestino`, `aplicarResultado`, `exigeNaveSinMantenimientoPendiente`). |
+| Template Method | `Mision.ejecutarCiclo()` | Ciclo fijo preparar → ejecutar → evaluar → cerrar. Después de cada etapa se invoca su hook (prepararHook, ejecutarHook, evaluarHook, cerrarHook); además cada misión redefine obtenerObjetivo, verificarEnDestino, aplicarResultado y exigeNaveSinMantenimientoPendiente |
 | Factory | `NaveFactory`, `TripulanteFactory`, `MisionFactory` | El cliente pide el tipo sin instanciar clases concretas. |
 | Decorator | `TripulanteOrigenDecorator` y orígenes | Agrega el subsidio por origen al haber; `getDetalleHaberes()` mantiene identificable cada concepto. |
 | Double Dispatch | `Nave.gana(...)` / `ganaExploradora()`, `ganaCarguera()`, `ganaCombate()` | Resultado de las batallas según el tipo de ambas naves. |
@@ -113,6 +113,8 @@ src/test/java           Prueba (programa principal) y PruebaDAO
 - **Capacidad:** combustible y energía hasta 100 para las tres naves (Ficha de Inicio); los valores
   iniciales dependen del tipo.
 - **Bitácora:** cada evento guarda fecha y hora, no puede modificarse y no acepta eventos vacíos.
+- **Destrucción:** la nave se destruye con combustible 0, con desgaste 100 o al perder una batalla. La energía puede llegar a 0: no destruye la nave, solo impide el salto warp.
+
 
 ## Verificación
 

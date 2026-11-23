@@ -46,6 +46,7 @@ public abstract class Mision {
 
     /**
      * Ejecuta el ciclo completo de la misión (preparación, ejecución, evaluación y cierre).<br>
+     * Después de cada etapa se invoca su hook, que las misiones concretas pueden redefinir.<br>
      * <b>Pre:</b><br>
      * - {@code asistente != null} y {@code asistente.getNave() != null}.<br>
      * <b>Post:</b><br>
@@ -60,8 +61,11 @@ public abstract class Mision {
         InformeMision informe;
 
         preparar();
+        prepararHook();
         ejecutar();
+        ejecutarHook();
         evaluar();
+        evaluarHook();
         informe = cerrar();
         informe = cerrarHook(informe); // cerrarHook recibe el informe default por si le quiciese hacer alguna modificacion
         return informe;
@@ -112,7 +116,15 @@ public abstract class Mision {
         bitacora.registrar("Preparación exitosa: recursos suficientes.");
     }
 
-    protected void prepararHook(){}
+    /**
+     * Hook extensible que se invoca después de una preparación exitosa.<br>
+     * <b>Pre:</b><br>
+     * - {@link #preparar()} terminó sin excepción.<br>
+     * <b>Post:</b><br>
+     * - Por defecto no aplica cambios.
+     */
+    protected void prepararHook() {
+    }
 
     /**
      * Los recursos alcanzan si, después del consumo inicial, la nave sigue operativa:
@@ -129,7 +141,7 @@ public abstract class Mision {
         assert nave != null : "La nave no puede ser nula.";
 
         return nave.getCombustible() > getCostoCombustible()
-                && nave.getEnergia() > getCostoEnergia()
+                && nave.getEnergia() >= getCostoEnergia()
                 && nave.getDesgaste() + getCostoDesgaste() < Nave.DESGASTE_MAXIMO;
     }
 
@@ -174,7 +186,7 @@ public abstract class Mision {
         assert objetivo != null : "El objetivo de la misión debe estar definido antes de ejecutar.";
         assert camino != null : "El camino de la misión debe estar inicializado antes de ejecutar.";
 
-        Destino destino = Destino.getInstancia(asistente.getTablero());
+        Destino destino = new Destino(asistente.getTablero());
         Nave nave = asistente.getNave();
         int indiceCamino = 0;                        // posición actual de la nave dentro de camino
 
@@ -242,6 +254,16 @@ public abstract class Mision {
     }
 
     /**
+     * Hook extensible que se invoca después de {@link #ejecutar()}.<br>
+     * <b>Pre:</b><br>
+     * - Ninguna.<br>
+     * <b>Post:</b><br>
+     * - Por defecto no aplica cambios.
+     */
+    protected void ejecutarHook() {
+    }
+
+    /**
      * Verificación en destino, al llegar al objetivo. Por defecto el objetivo se cumple al llegar;
      * las misiones que exigen condiciones adicionales (M-01) la redefinen.<br>
      * <b>Pre:</b><br>
@@ -269,6 +291,16 @@ public abstract class Mision {
         this.exitosa = !asistente.getNave().getDestruida() && objetivoVerificado;
         bitacora.registrar("Evaluación de la misión: " + (exitosa ? "ÉXITO" : "FALLO") + ".");
         bitacora.registrar("Balance de la travesía (" + recursosAlLlegar.variacionDesde(recursosIniciales) + ").");
+    }
+
+    /**
+     * Hook extensible que se invoca después de {@link #evaluar()}.<br>
+     * <b>Pre:</b><br>
+     * - Ninguna.<br>
+     * <b>Post:</b><br>
+     * - Por defecto no aplica cambios.
+     */
+    protected void evaluarHook() {
     }
 
     /**

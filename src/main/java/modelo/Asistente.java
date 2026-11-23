@@ -94,7 +94,7 @@ public class Asistente {
     /**
      * Carga combustible en la nave y registra el resultado en la bitácora general.<br>
      * <b>Pre:</b><br>
-     * - {@code nave != null}, {@code bitacora_general != null} y {@code cantidad >= 0}.<br>
+     * - {@code nave != null} y {@code bitacora_general != null}.<br>
      * <b>Post:</b><br>
      * - Si la carga es válida, se actualiza el combustible de la nave y se registra el éxito en {@code bitacora_general}; si falla, se registra el rechazo y se propaga la excepción.<br>
      *
@@ -103,7 +103,6 @@ public class Asistente {
      */
     public void cargarCombustible(int cantidad) {
         assert nave != null && bitacora_general != null : "La nave y la bitácora general deben estar inicializadas.";
-        assert cantidad >= 0 : "La cantidad de combustible a cargar no puede ser negativa.";
 
         try {
             nave.cargarCombustible(cantidad);
@@ -117,7 +116,7 @@ public class Asistente {
     /**
      * Carga energía en la nave y registra el resultado en la bitácora general.<br>
      * <b>Pre:</b><br>
-     * - {@code nave != null}, {@code bitacora_general != null} y {@code cantidad >= 0}.<br>
+     * - {@code nave != null} y {@code bitacora_general != null}.<br>
      * <b>Post:</b><br>
      * - Si la carga es válida, se actualiza la energía de la nave y se registra el éxito en {@code bitacora_general}; si falla, se registra el rechazo y se propaga la excepción.<br>
      *
@@ -126,7 +125,6 @@ public class Asistente {
      */
     public void cargarEnergia(int cantidad) {
         assert nave != null && bitacora_general != null : "La nave y la bitácora general deben estar inicializadas.";
-        assert cantidad >= 0 : "La cantidad de energía a cargar no puede ser negativa.";
 
         try {
             nave.cargarEnergia(cantidad);
