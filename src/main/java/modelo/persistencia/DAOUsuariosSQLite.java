@@ -82,4 +82,15 @@ public class DAOUsuariosSQLite implements DAOUsuarios {
                 throw new RuntimeException(e); // nada que hacer si la db falla inesperadamente
         }
     }
+
+    @Override
+    public void finalize() {
+        if(c!=null) {
+            try {
+                c.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
