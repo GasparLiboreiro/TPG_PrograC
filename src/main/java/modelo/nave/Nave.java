@@ -71,6 +71,17 @@ public abstract class Nave implements ElementoDelUniverso,Batalla {
 
     public int getGemas() { return gemas; }
 
+    /**
+     * Agrega gemas a la bodega de la nave.
+     * @throws IllegalArgumentException si cantidad es negativa
+     * @throws IllegalStateException si la nave está destruida
+     */
+    public void agregarGemas(int cantidad) {
+        verificarEstado();
+        validarCantidad(cantidad);
+        gemas += cantidad;
+    }
+
     private void verificarEstado() {
         if (destruida) {
             throw new IllegalStateException("La nave está destruida.");

@@ -3,20 +3,26 @@ package modelo.misiones;
 import java.util.Random;
 
 import modelo.Asistente;
-import modelo.ElementoDelUniverso;
 import modelo.nave.Nave;
 
-
+/**
+ * M-01: alcanzar a la nave aliada (el objetivo) y entregarle los recursos que solicita.
+ * El pedido se define al preparar; al llegar se verifica que la nave todavía los tenga,
+ * y la entrega efectiva se descuenta en el cierre.
+ */
 public class MisionIntercepcion extends Mision {
+    private static final int PEDIDO_MAXIMO = 50; // Anexo: entre 0 y 50 de energía y/o combustible
+
+    private final Random azar = new Random();
+    private int energiaPedida;
+    private int combustiblePedido;
 
     public MisionIntercepcion(Asistente asistente) {
         super(asistente);
     }
 
     @Override public String getCodigo() {
-
         return "M-01";
-
     }
     @Override public int getCostoCombustible() {
         return 4;
@@ -29,34 +35,40 @@ public class MisionIntercepcion extends Mision {
     }
 
     @Override
-    protected String ejecutarMision() { //cuando se desarrollen las misiones
-    	ElementoDelUniverso elemDestino = asistente.analizarPosicion();
-    	if (elemDestino instanceof Nave) {
-    		Nave propiaNave = asistente.getNave();
-    		Random random = new Random();
-            int energiaRequerida = Math.min(random.nextInt(51), ((Nave) elemDestino).getEspacioEnergia()); // entre 0 y 50, sin superar la capacidad de la aliada
-            int combustibleRequerido = Math.min(random.nextInt(51), ((Nave) elemDestino).getEspacioCombustible());
-            if (propiaNave.getCombustible() >= combustibleRequerido && propiaNave.getEnergia() >= energiaRequerida) {
-            	Nave naveAliada = (Nave) elemDestino;
-            	if (energiaRequerida > 0) {
-            		propiaNave.consumirEnergia(energiaRequerida);
-            		naveAliada.cargarEnergia(energiaRequerida);
-            	}
-            	if (combustibleRequerido > 0) {
-            		propiaNave.consumirCombustible(combustibleRequerido);
-            		naveAliada.cargarCombustible(combustibleRequerido);
-            	}
-            	bitacora.registrar("Asistencia completada. Se transfirieron " + energiaRequerida + " de energía y " + combustibleRequerido + " de combustible.");
-            	return "Mision M1: Intercepción y asistencia completada con éxito.";
-            } else {
-            	return "Mision M1: Intercepción y asistencia no completada por falta de recursos.";
-            }
-    	} else {
-    		return "Mision M1: Intercepción y asistencia no completada debido a nave aliada no encontrada.";
-    	}
+    protected void prepararHook() {
+        energiaPedida = azar.nextInt(PEDIDO_MAXIMO + 1);
+        combustiblePedido = azar.nextInt(PEDIDO_MAXIMO + 1);
+        bitacora.registrar("La nave aliada solicita auxilio: " + energiaPedida + " de energía y " + combustiblePedido + " de combustible.");
     }
+
+    /** La nave debe conservar lo pedido y seguir operativa después de entregarlo. */
     @Override
-    protected void ejecutarHook() {
-        bitacora.registrar(" Análisis táctico de radar y escaneo perimetral completado.");
+    protected boolean verificarEnDestino() {
+        Nave nave = asistente.getNave();
+        boolean alcanza = nave.getEnergia() > energiaPedida && nave.getCombustible() > combustiblePedido;
+        bitacora.registrar("Verificación en destino: la nave tiene " + nave.getEnergia() + " de energía y " + nave.getCombustible()
+                + " de combustible para un pedido de " + energiaPedida + " y " + combustiblePedido + " -> "
+                + (alcanza ? "alcanza." : "no alcanza."));
+        return alcanza;
     }
+
+    @Override
+    protected String ejecutarMision() {
+        if (objetivoVerificado) {
+            return "Contacto establecido con la nave aliada: asistencia lista para transferir.";
+        }
+        return "La nave ya no conserva los recursos solicitados: la asistencia no se realiza.";
+    }
+
+    /** Entrega efectiva, descontada en el cierre. */
+    @Override
+    protected void aplicarResultado() {
+        Nave nave = asistente.getNave();
+        nave.consumirEnergia(energiaPedida);
+        nave.consumirCombustible(combustiblePedido);
+        bitacora.registrar("Asistencia realizada: se transfirieron " + energiaPedida + " de energía y " + combustiblePedido + " de combustible a la nave aliada.");
+    }
+
+    public int getEnergiaPedida() { return energiaPedida; }
+    public int getCombustiblePedido() { return combustiblePedido; }
 }

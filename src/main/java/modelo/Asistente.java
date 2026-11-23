@@ -14,11 +14,13 @@ public class Asistente {
     private Bitacora bitacora_general; // la bitacora debe registrar lo acontecido a traves de la ejecucion entera, tras la ejecucion de una mision, la bitacora de la misison debe añadirse encima de la bitacora_general
     private final Tablero tablero;
     private Posicion objetivoActual;
+    private final Posicion baseDeOrigen; // punto de partida del recorrido: destino del retorno a base (M-03)
 
     public Asistente(Nave nave, Tablero tablero) {
         this.nave = nave;
         this.bitacora_general = new Bitacora();
         this.tablero = tablero;
+        this.baseDeOrigen = tablero.getPosicionNave();
     }
     public void add_tripulante(Tripulante tripulante) throws Exception {
         this.nave.addTripulante(tripulante);
@@ -148,6 +150,16 @@ public class Asistente {
     public Posicion usarRLD(){
         this.objetivoActual = tablero.obtenerObjetivo();
         return this.objetivoActual;
+    }
+
+    /** Fija como objetivo la base de origen (punto de partida del recorrido) y la devuelve. */
+    public Posicion usarBaseDeOrigen() {
+        this.objetivoActual = this.baseDeOrigen;
+        return this.baseDeOrigen;
+    }
+
+    public Posicion getBaseDeOrigen() {
+        return this.baseDeOrigen;
     }
 
     public Posicion getObjetivoActual() {
