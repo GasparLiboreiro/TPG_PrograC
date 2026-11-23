@@ -81,7 +81,7 @@ public class VentanaCapacidadPlataforma extends JDialog implements IVistaCapacid
             JOptionPane.showMessageDialog(
                     this,
                     "Ingrese una capacidad positiva o cero.",
-                    "Capacidad inv·lida",
+                    "Capacidad inv√°lida",
                     JOptionPane.ERROR_MESSAGE
             );
             return;
@@ -93,8 +93,8 @@ public class VentanaCapacidadPlataforma extends JDialog implements IVistaCapacid
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(
                     this,
-                    "La capacidad debe ser un n˙mero entero positivo o cero.",
-                    "Capacidad inv·lida",
+                    "La capacidad debe ser un n√∫mero entero positivo o cero.",
+                    "Capacidad inv√°lida",
                     JOptionPane.ERROR_MESSAGE
             );
             return;
@@ -103,8 +103,8 @@ public class VentanaCapacidadPlataforma extends JDialog implements IVistaCapacid
         if (valor < 0) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Ingrese una capacidad positiva (o 0). No se permiten n˙meros negativos.",
-                    "Capacidad inv·lida",
+                    "Ingrese una capacidad positiva (o 0). No se permiten n√∫meros negativos.",
+                    "Capacidad inv√°lida",
                     JOptionPane.ERROR_MESSAGE
             );
             return;
