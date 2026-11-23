@@ -50,7 +50,7 @@ public class Controlador implements ActionListener {
             if (!this.sistema.dtoUsuarioCumpleFormatoMinimo(usuario)) {
                 vista.notificarErrorLogin("Nombre y/o Contraseña vacia o de longitud mayor a 50");
             } else if (!sistema.iniciar_secion(usuario)) {
-                vista.notificarErrorLogin("Datos de inicio de secion invalidos");
+                vista.notificarErrorLogin("Datos de inicio de sesion invalidos");
             } else {
                 vista.iniciarConfiguracionNave();
             }
@@ -101,19 +101,17 @@ public class Controlador implements ActionListener {
         } else if ("reiniciar".equals(cmd)) {
             this.sistema.setAsistente(null);
             this.vista.iniciarConfiguracionNave();
-        }
-        else if (e.getActionCommand().equals("Concurrencia")) {
+        } else if ("Concurrencia".equals(cmd)) {
             this.controladorConcurrencia = new ControladorConcurrencia();
             this.controladorConcurrencia.iniciarFlujoCapacidad();
-
         }
     }
 
     private void ejecutarMisionSeleccionada() {
         String tipoMision = vista.getTipoMision();
-        Asistente asistente = sistema.getAsistente(); // (1)
+        Asistente asistente = sistema.getAsistente();
         vista.setControlesMisionHabilitados(false);
-        vista.setReinicioHabilitado(false);            // (2)
+        vista.setReinicioHabilitado(false);
 
         new Thread(() -> {
             try {
@@ -121,8 +119,8 @@ public class Controlador implements ActionListener {
                 InformeMision informe = asistente.ejecutarMision(mision);
                 vista.actualizarVistaJuego(informe);
             } catch (Exception ex) {
-                vista.mostrarError(ex.getMessage());   // (3)
-            } finally {                                // (4)
+                vista.mostrarError(ex.getMessage());
+            } finally {
                 vista.setReinicioHabilitado(true);
                 if (!asistente.getNave().getDestruida()) {
                     vista.setControlesMisionHabilitados(true);

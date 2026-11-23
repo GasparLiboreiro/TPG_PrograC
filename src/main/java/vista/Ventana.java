@@ -58,6 +58,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     private final JPasswordField contraseniaRegistro = new JPasswordField(20);
     private JLabel mensajeErrorRegistro;
     private boolean modoRegistroActivo = false;
+    private String ultimoUsuarioRegistrado;
 
     private String[] tiposNaves;
     private String[] tiposOrigen;
@@ -96,7 +97,6 @@ public class Ventana extends JFrame implements IVista, Observador {
         this.listenerFinalizar = listenerFinalizar;
         SwingUtilities.invokeLater(this::iniciarLogin);
     }
-
 
     @Override
     public void setTiposNaves(String[] tiposNaves) {
@@ -145,11 +145,26 @@ public class Ventana extends JFrame implements IVista, Observador {
             setTitle("Inicio de sesión");
 
             asegurarPanelesAuth();
-            if (mensajeErrorLogin != null) {
-                mensajeErrorLogin.setForeground(Color.RED);
-                mensajeErrorLogin.setText("");
-                mensajeErrorLogin.setVisible(false);
+            contrasenia.setText("");
+
+            if (ultimoUsuarioRegistrado != null && !ultimoUsuarioRegistrado.isEmpty()) {
+                nombre.setText(ultimoUsuarioRegistrado);
+                ultimoUsuarioRegistrado = null;
+                if (mensajeErrorLogin != null) {
+                    mensajeErrorLogin.setForeground(new Color(46, 125, 50));
+                    mensajeErrorLogin.setText("Usuario registrado. Ingresa tu contraseña para iniciar sesión.");
+                    mensajeErrorLogin.setVisible(true);
+                }
+                contrasenia.requestFocusInWindow();
+            } else {
+                if (mensajeErrorLogin != null) {
+                    mensajeErrorLogin.setForeground(Color.RED);
+                    mensajeErrorLogin.setText("");
+                    mensajeErrorLogin.setVisible(false);
+                }
+                nombre.requestFocusInWindow();
             }
+
             if (mensajeErrorRegistro != null) {
                 mensajeErrorRegistro.setText("");
                 mensajeErrorRegistro.setVisible(false);
@@ -160,7 +175,6 @@ public class Ventana extends JFrame implements IVista, Observador {
             revalidate();
             repaint();
             setVisible(true);
-            nombre.requestFocusInWindow();
         });
     }
 
@@ -258,11 +272,22 @@ public class Ventana extends JFrame implements IVista, Observador {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         JButton crearUsuario = new JButton("Crear usuario");
         crearUsuario.setActionCommand("registrarse");
-        crearUsuario.addActionListener(listenerFinalizar);
+        crearUsuario.addActionListener(e -> {
+            if (modoRegistroActivo) {
+                String candidato = nombreRegistro.getText();
+                ultimoUsuarioRegistrado = candidato != null ? candidato.trim() : null;
+            }
+            if (listenerFinalizar != null) {
+                listenerFinalizar.actionPerformed(e);
+            }
+        });
 
         JButton volver = new JButton("Volver");
         volver.setActionCommand("volver_login");
-        volver.addActionListener(e -> iniciarLogin());
+        volver.addActionListener(e -> {
+            ultimoUsuarioRegistrado = null;
+            iniciarLogin();
+        });
 
         botones.add(crearUsuario);
         botones.add(volver);
@@ -324,6 +349,7 @@ public class Ventana extends JFrame implements IVista, Observador {
 
     private void construirInterfaz() {
         modoRegistroActivo = false;
+        ultimoUsuarioRegistrado = null;
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(760, 650));
         setSize(850, 700);
@@ -431,30 +457,29 @@ public class Ventana extends JFrame implements IVista, Observador {
     }
 
     private JPanel crearPanelInferior() {
-            JPanel panelInferior = new JPanel(new GridBagLayout());
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 0;
-            c.weightx = 1;
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.insets = new Insets(0, 0, 6, 0);
+        JPanel panelInferior = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 0, 6, 0);
 
-            c.gridy = 0;
-            panelInferior.add(crearBotonConcurrencia(), c);
+        c.gridy = 0;
+        panelInferior.add(crearBotonConcurrencia(), c);
 
-            c.gridy = 1;
-            c.insets = new Insets(0, 0, 0, 0);
-            panelInferior.add(crearBotonFinalizar(), c);
+        c.gridy = 1;
+        c.insets = new Insets(0, 0, 0, 0);
+        panelInferior.add(crearBotonFinalizar(), c);
 
-            return panelInferior;
-        }
+        return panelInferior;
+    }
+
     private JButton crearBotonConcurrencia() {
         JButton concurrencia = new JButton("Concurrencia");
         concurrencia.setActionCommand("Concurrencia");
         concurrencia.addActionListener(this.listenerFinalizar);
         return concurrencia;
     }
-
-
 
     private GridBagConstraints restricciones() {
         GridBagConstraints c = new GridBagConstraints();
@@ -577,6 +602,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     public void iniciarConfiguracionNave() {
         SwingUtilities.invokeLater(() -> {
             modoRegistroActivo = false;
+            ultimoUsuarioRegistrado = null;
             if (this.asistenteActual != null) {
                 this.asistenteActual.getTablero().quitarObservador(this);
             }
@@ -598,12 +624,16 @@ public class Ventana extends JFrame implements IVista, Observador {
 
     @Override
     public void iniciarJuego(Asistente asistente) {
-        this.asistenteActual = asistente;
-        setTitle("Programa en ejecución");
-        configurarCombo(selectorMision, tiposMisiones);
-        setContentPane(crearPanelJuego(asistente));
-        revalidate();
-        repaint();
+        SwingUtilities.invokeLater(() -> {
+            modoRegistroActivo = false;
+            ultimoUsuarioRegistrado = null;
+            this.asistenteActual = asistente;
+            setTitle("Programa en ejecución");
+            configurarCombo(selectorMision, tiposMisiones);
+            setContentPane(crearPanelJuego(asistente));
+            revalidate();
+            repaint();
+        });
     }
 
     private JPanel crearPanelJuego(Asistente asistente) {
@@ -735,6 +765,7 @@ public class Ventana extends JFrame implements IVista, Observador {
             selectorMision.setEnabled(habilitado);
         });
     }
+
     @Override
     public void setReinicioHabilitado(boolean habilitado) {
         SwingUtilities.invokeLater(() -> botonReiniciar.setEnabled(habilitado));
@@ -767,7 +798,7 @@ public class Ventana extends JFrame implements IVista, Observador {
     }
 
     @Override
-    public void actualizar() {
+    public void actualizar() { // actualizar tablero
         if (this.asistenteActual != null) {
             SwingUtilities.invokeLater(() -> {
                 refrescarGrilla(this.asistenteActual.getTablero());
