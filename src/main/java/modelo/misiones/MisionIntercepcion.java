@@ -34,8 +34,8 @@ public class MisionIntercepcion extends Mision {
     	if (elemDestino instanceof Nave) {
     		Nave propiaNave = asistente.getNave();
     		Random random = new Random();
-            int energiaRequerida = random.nextInt(51);       // Genera un valor entre 0 y 50
-            int combustibleRequerido = random.nextInt(51);
+            int energiaRequerida = Math.min(random.nextInt(51), ((Nave) elemDestino).getEspacioEnergia()); // entre 0 y 50, sin superar la capacidad de la aliada
+            int combustibleRequerido = Math.min(random.nextInt(51), ((Nave) elemDestino).getEspacioCombustible());
             if (propiaNave.getCombustible() >= combustibleRequerido && propiaNave.getEnergia() >= energiaRequerida) {
             	Nave naveAliada = (Nave) elemDestino;
             	if (energiaRequerida > 0) {

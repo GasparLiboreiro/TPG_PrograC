@@ -1,8 +1,6 @@
 package modelo.nave;
 
 public class NaveCombate extends Nave {
-    protected int combustibleMax = 80;
-    protected int energiaMax = 100;
 
     public NaveCombate() {
         super(80, 100, 0);

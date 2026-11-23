@@ -1,42 +1,57 @@
 package modelo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * Registro en orden temporal de los eventos ocurridos.
+ * <p><b>Invariantes:</b> no contiene eventos nulos ni vacíos; un evento registrado
+ * no puede modificarse ni eliminarse; los eventos se conservan en el orden en que ocurrieron.</p>
+ */
+public class Bitacora {
+    private final List<EventoBitacora> eventos = new ArrayList<>();
 
-public class Bitacora { 
-    private final List<String> entradas;
-
-    public Bitacora() {
-        this.entradas = new ArrayList<>();
-    }
-
-    public void registrar(String entrada) {
-        if (entrada != null && !entrada.trim().isEmpty()) {
-            this.entradas.add(entrada);
+    /**
+     * Registra un evento con la fecha y hora actuales.
+     * <b>Pre:</b> descripcion no es nula ni vacía.
+     * @throws IllegalArgumentException si la descripción es nula o vacía
+     */
+    public synchronized void registrar(String descripcion) {
+        if (descripcion == null || descripcion.isBlank()) {
+            throw new IllegalArgumentException("La bitácora no acepta eventos nulos o vacíos.");
         }
+        eventos.add(new EventoBitacora(LocalDateTime.now(), descripcion.trim()));
     }
 
     /**
-     * Agrega todo el contenido de in encima de this
-     * <b>Pre:</b> in es distinto de null
-     *
-     * @param tipo Bitacora cuyos datos se desean depositar en entradas
-     * @throws IllegalArgumentException si in es null
+     * Agrega al final todos los eventos de otra bitácora, conservando su fecha y hora.
+     * @throws IllegalArgumentException si otra es null
      */
-    public void append(Bitacora in) throws NullPointerException {
-        if (in==null) {
-            throw new NullPointerException("La bitacora no puede ser nula");
+    public synchronized void append(Bitacora otra) {
+        if (otra == null) {
+            throw new IllegalArgumentException("La bitácora a agregar no puede ser nula.");
         }
-        entradas.addAll(in.getEntradas()); // testeado, funciona god
+        eventos.addAll(otra.getEventos());
     }
-    // Por contrato de negocio, quien consume esta lista solo la lee
-    // para asegurar ese comportamiento podriamos retornar un iterator de entradas
-    public List<String> getEntradas() {
-        return entradas;
+
+    /** @return copia de solo lectura de los eventos, en orden temporal */
+    public synchronized List<EventoBitacora> getEventos() {
+        return Collections.unmodifiableList(new ArrayList<>(eventos));
     }
+
+    /** @return los eventos como texto "[HH:mm:ss] descripción", de solo lectura y en orden temporal */
+    public synchronized List<String> getEntradas() {
+        List<String> entradas = new ArrayList<>();
+        for (EventoBitacora evento : eventos) {
+            entradas.add(evento.toString());
+        }
+        return Collections.unmodifiableList(entradas);
+    }
+
     @Override
-    public String toString() {
-        return "Bitacora{" + "entradas=" + entradas + '}';
+    public synchronized String toString() {
+        return "Bitacora{" + "eventos=" + eventos + '}';
     }
 }

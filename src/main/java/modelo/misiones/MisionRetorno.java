@@ -24,21 +24,19 @@ public class MisionRetorno extends Mision {
 
     @Override
     protected String ejecutarMision() {
-    	Nave navePropia = asistente.getNave();
-    	int combustibleFaltante = navePropia.getCombustibleMax() - navePropia.getCombustible();
-        int energiaFaltante = navePropia.getEnergiaMax() - navePropia.getEnergia();
+        Nave navePropia = asistente.getNave();
+        navePropia.cargarCombustible(navePropia.getEspacioCombustible());
+        navePropia.cargarEnergia(navePropia.getEspacioEnergia());
+        navePropia.realizarMantenimiento();
 
-        if (combustibleFaltante > 0) {
-        	navePropia.cargarCombustible(combustibleFaltante);
-        }
-        if (energiaFaltante > 0) {
-        	navePropia.cargarEnergia(energiaFaltante);
-        }
-        
-        navePropia.setDesgaste(0);
-
-        bitacora.registrar("Arribo exitoso a la base, recursos recuperados.");
+        bitacora.registrar("Arribo exitoso a la base: recarga total de combustible y energía, mantenimiento realizado (desgaste 0).");
         return "Mision M3: Nave retornada a la base de operaciones segura.";
+    }
+
+    /** El retorno a base se permite aunque la nave requiera mantenimiento: es la misión que lo realiza. */
+    @Override
+    protected boolean exigeNaveSinMantenimientoPendiente() {
+        return false;
     }
 
     @Override

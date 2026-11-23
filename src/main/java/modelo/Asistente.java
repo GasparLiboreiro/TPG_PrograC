@@ -36,10 +36,55 @@ public class Asistente {
         return this.nave.getEstadoMotorWarp();
     }
 
+    /**
+     * Ejecuta la misión y agrega su bitácora a la bitácora general.
+     * Si la misión es rechazada o falla con una excepción, igual se agrega lo registrado (con el motivo) y se propaga la excepción.
+     */
     public InformeMision ejecutarMision(Mision mision) {
-        InformeMision informe = mision.ejecutarCiclo();
-        this.bitacora_general.append(informe.getBitacora());
-        return informe;
+        try {
+            InformeMision informe = mision.ejecutarCiclo();
+            this.bitacora_general.append(informe.getBitacora());
+            return informe;
+        } catch (RuntimeException e) {
+            this.bitacora_general.append(mision.getBitacora());
+            throw e;
+        }
+    }
+
+    // ---- Operaciones de recursos y mantenimiento (E1-09): coordinan con la nave y registran el resultado ----
+
+    /** @throws IllegalArgumentException o IllegalStateException si la carga no es válida; el motivo queda registrado */
+    public void cargarCombustible(int cantidad) {
+        try {
+            nave.cargarCombustible(cantidad);
+            bitacora_general.registrar("Carga de " + cantidad + " de combustible. Combustible actual: " + nave.getCombustible() + ".");
+        } catch (RuntimeException e) {
+            bitacora_general.registrar("Carga de combustible rechazada: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /** @throws IllegalArgumentException o IllegalStateException si la carga no es válida; el motivo queda registrado */
+    public void cargarEnergia(int cantidad) {
+        try {
+            nave.cargarEnergia(cantidad);
+            bitacora_general.registrar("Carga de " + cantidad + " de energía. Energía actual: " + nave.getEnergia() + ".");
+        } catch (RuntimeException e) {
+            bitacora_general.registrar("Carga de energía rechazada: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /** @throws IllegalStateException si la nave está destruida; el motivo queda registrado */
+    public void realizarMantenimiento() {
+        try {
+            int antes = nave.getDesgaste();
+            nave.realizarMantenimiento();
+            bitacora_general.registrar("Mantenimiento realizado. Desgaste: " + antes + " -> 0.");
+        } catch (RuntimeException e) {
+            bitacora_general.registrar("Mantenimiento rechazado: " + e.getMessage());
+            throw e;
+        }
     }
 
     public Bitacora getBitacoraGeneral() {
@@ -86,7 +131,7 @@ public class Asistente {
 
     public void aumentarDesgaste(int cantidad) {
         nave.aumentarDesgaste(cantidad);
-        bitacora_general.registrar("Se aumento el desgaste en "+cantidad+" unidades, desgaste actual: "+cantidad);
+        bitacora_general.registrar("Se aumento el desgaste en "+cantidad+" unidades, desgaste actual: "+nave.getDesgaste());
     }
 
 

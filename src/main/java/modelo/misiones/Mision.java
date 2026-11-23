@@ -51,7 +51,12 @@ public abstract class Mision {
     protected void preparar() throws EstadoInvalido {
         bitacora.registrar("Preparando misión " + getCodigo() + ". Verificando recursos y tripulacion.");
 
-        if (asistente.getNave().getCombustible() < getCostoCombustible() || asistente.getNave().getEnergia() < getCostoEnergia()) {
+        if (asistente.getNave().getDestruida()) {
+            bitacora.registrar("Fallo en preparación: la nave está destruida.");
+            throw new EstadoInvalido("La nave está destruida y no puede iniciar la misión " + getCodigo() + ".");
+        }
+
+        if (!alcanzanLosRecursos(asistente.getNave())) {
 
             bitacora.registrar("Fallo en preparación: recursos insuficientes.");
 
@@ -64,12 +69,35 @@ public abstract class Mision {
             throw new EstadoInvalido("La nave no cuenta con la dotación mínima reglamentaria para iniciar la misión.");
 }
 
+        if (exigeNaveSinMantenimientoPendiente() && asistente.getNave().requiereMantenimiento()) {
+            bitacora.registrar("Fallo en preparación: la nave requiere mantenimiento (desgaste " + asistente.getNave().getDesgaste() + "). Solo puede realizar el retorno a base.");
+            throw new EstadoInvalido("La nave requiere mantenimiento: solo puede ejecutar el retorno a base (M-03).");
+        }
+
         //EN CASO DE QUE SE PUEDA HACER LA MISION SE OBTIENE EL OBJETIVO Y SE PREPARA LA RUTA.
         objetivo = asistente.usarRLD();
         camino = asistente.generarCamino(objetivo);
 
         bitacora.registrar("Preparación exitosa: recursos suficientes.");
     }
+    /**
+     * Los recursos alcanzan si, después del consumo inicial, la nave sigue operativa:
+     * combustible y energía mayores a 0 y desgaste menor al máximo.
+     */
+    private boolean alcanzanLosRecursos(Nave nave) {
+        return nave.getCombustible() > getCostoCombustible()
+                && nave.getEnergia() > getCostoEnergia()
+                && nave.getDesgaste() + getCostoDesgaste() < Nave.DESGASTE_MAXIMO;
+    }
+
+    /**
+     * Indica si la misión exige que la nave no requiera mantenimiento.
+     * Por defecto sí; el retorno a base lo redefine porque es la misión que hace el mantenimiento.
+     */
+    protected boolean exigeNaveSinMantenimientoPendiente() {
+        return true;
+    }
+
     protected void prepararHook() {
     }
 

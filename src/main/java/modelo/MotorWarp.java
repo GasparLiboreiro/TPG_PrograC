@@ -24,6 +24,9 @@ public class MotorWarp {
     private String ultimoEvento;
 
     public MotorWarp(Nave nave) {
+        if (nave == null) {
+            throw new IllegalArgumentException("El motor warp necesita una nave.");
+        }
         this.nave = nave;
         this.estado = new StateMWDisponible(this);
     }
@@ -72,6 +75,9 @@ public class MotorWarp {
      * @return 1, la casilla que avanza
      */
     int saltoNormal() {
+        if (nave.getDestruida()) {
+            return 0; // la nave se destruyó en este mismo turno (por ejemplo, por el desgaste del enfriamiento)
+        }
         nave.consumirCombustible(Math.min(COSTO_COMBUSTIBLE_SALTO, nave.getCombustible()));
         return 1;
     }
